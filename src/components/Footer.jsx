@@ -1,17 +1,4 @@
-import { motion } from "framer-motion";
 import logo from "../assets/logoBlack.png";
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 },
-};
-
-const fadeIn = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1 },
-  transition: { duration: 0.6 },
-};
 
 const Footer = () => {
   const scrollToTop = () => {
@@ -21,143 +8,74 @@ const Footer = () => {
     });
   };
 
+  const footerClipPath =
+    "polygon(0% 20px, 1.3% 7px, 3.8% 19px, 6.1% 6px, 9.5% 18px, 11.2% 5px, 14.8% 19px, 16.5% 8px, 19.2% 17px, 21.8% 4px, 24.5% 18px, 28% 6px, 30.2% 19px, 34.5% 5px, 36.8% 18px, 40.2% 7px, 43.5% 19px, 45.8% 4px, 49.2% 18px, 51.5% 7px, 54.8% 19px, 58.2% 5px, 61.5% 18px, 64.2% 8px, 67.8% 19px, 70.5% 6px, 73.2% 18px, 77.5% 5px, 80.8% 19px, 83.2% 7px, 86.5% 18px, 89.2% 4px, 92.5% 19px, 95.8% 6px, 98.2% 18px, 100% 20px, 100% 100%, 0% 100%)";
+
   return (
-    <motion.footer
-      className="bg-background/5"
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true }}
+    <div
+      className="relative"
+      style={{ filter: "drop-shadow(0 -5px 10px rgba(0,0,0,0.1))" }}
     >
-      <div className="max-w-7xl mx-auto px-4 pb-20 lg:pb-10 pt-10">
+      <footer
+        className="bg-background/5 pt-16"
+        style={{ clipPath: footerClipPath }}
+      >
+        <div className="footer-content max-w-7xl mx-auto px-4 pb-20 lg:pb-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
-          <motion.div className="space-y-2" variants={fadeIn}>
+          <div className="footer-column space-y-2">
             <div className="flex items-start flex-col gap-1">
               <img src={logo} alt="Logo" className="h-20 w-auto" />
-              <motion.h3
-                className="text-xl font-header text-primary"
-                variants={fadeInUp}
-              >
+              <h3 className="text-xl font-header text-primary">
                 About Me
-              </motion.h3>
+              </h3>
             </div>
-            <motion.p className="text-gray-600" variants={fadeInUp}>
+            <p className="text-gray-600">
               Passionate Full Stack Developer with expertise in building
               scalable and efficient web applications.
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
 
           {/* Quick Links */}
-          <motion.div className="space-y-4" variants={fadeIn}>
-            <motion.h3
-              className="text-lg font-header text-primary mb-4"
-              variants={fadeInUp}
-            >
+          <div className="footer-column space-y-4">
+            <h3 className="text-lg font-header text-primary mb-4">
               Quick Links
-            </motion.h3>
-            <motion.ul className="space-y-2" variants={fadeIn}>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <a
-                  href="#about"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
+            </h3>
+            <ul className="space-y-2">
+              {[
+                { href: "#about", text: "About" },
+                { href: "#projects", text: "Projects" },
+                { href: "#skills", text: "Skills" },
+                { href: "#contact", text: "Contact" },
+                { href: "#experience", text: "Experience" },
+              ].map((link, index) => (
+                <li
+                  key={index}
+                  className="transform transition-transform duration-300 hover:translate-x-1"
                 >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    About
-                  </span>
-                </a>
-              </motion.li>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <a
-                  href="#projects"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    Projects
-                  </span>
-                </a>
-              </motion.li>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <a
-                  href="#skills"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    Skills
-                  </span>
-                </a>
-              </motion.li>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <a
-                  href="#contact"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    Contact
-                  </span>
-                </a>
-              </motion.li>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <a
-                  href="#experience"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    Experience
-                  </span>
-                </a>
-              </motion.li>
-            </motion.ul>
-          </motion.div>
+                  <a
+                    href={link.href}
+                    className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
+                  >
+                    <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      →
+                    </span>
+                    <span className="group-hover:translate-x-2 transition-transform duration-300">
+                      {link.text}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Contact */}
-          <motion.div className="space-y-4" variants={fadeIn}>
-            <motion.h3
-              className="text-lge font-header text-primary mb-4"
-              variants={fadeInUp}
-            >
+          <div className="footer-column space-y-4 hidden md:block">
+            <h3 className="text-lg font-header text-primary mb-4">
               Contact
-            </motion.h3>
-            <motion.ul className="space-y-2" variants={fadeIn}>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
+            </h3>
+            <ul className="space-y-2">
+              <li className="transform transition-transform duration-300 hover:translate-x-1">
                 <a
                   href="mailto:abhay744das@gmail.com"
                   className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
@@ -169,12 +87,8 @@ const Footer = () => {
                     Email: abhay744das@gmail.com
                   </span>
                 </a>
-              </motion.li>
-              <motion.li
-                variants={fadeInUp}
-                whileHover={{ x: 5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
+              </li>
+              <li className="transform transition-transform duration-300 hover:translate-x-1">
                 <a
                   href="tel:+918169805273"
                   className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
@@ -186,17 +100,16 @@ const Footer = () => {
                     Phone: +91 8169805273
                   </span>
                 </a>
-              </motion.li>
-            </motion.ul>
-          </motion.div>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       {/* Floating Back to Top Button */}
-      <motion.button
+      <button
         onClick={scrollToTop}
-        className="hidden lg:block lg:fixed bottom-6 right-6 z-50 p-2 bg-primary rounded-lg shadow-lg hover:bg-primary/90 transition-colors duration-200"
+        className="scroll-top-btn hidden lg:block lg:fixed bottom-6 right-6 z-50 p-2 bg-primary rounded-lg shadow-lg hover:bg-primary/90 transition-colors duration-200"
         title="Scroll to Top"
-        variants={fadeInUp}
       >
         <svg
           className="w-5 h-5 text-white"
@@ -211,8 +124,9 @@ const Footer = () => {
             d="M5 10l7-7m0 0l7 7m-7-7v18"
           />
         </svg>
-      </motion.button>
-    </motion.footer>
+      </button>
+      </footer>
+    </div>
   );
 };
 

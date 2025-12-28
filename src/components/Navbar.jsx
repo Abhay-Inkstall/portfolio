@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   FiHome,
   FiUser,
@@ -11,6 +12,33 @@ import {
 import logo from "../assets/logoBlack.png";
 
 const Navbar = () => {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (typeof window !== "undefined") {
+        if (window.scrollY > lastScrollY && window.scrollY > 50) {
+          // if scroll down hide the navbar
+          setIsVisible(false);
+        } else {
+          // if scroll up show the navbar
+          setIsVisible(true);
+        }
+
+        // remember current page location to use in the next move
+        setLastScrollY(window.scrollY);
+      }
+    };
+
+    window.addEventListener("scroll", controlNavbar);
+
+    // cleanup function
+    return () => {
+      window.removeEventListener("scroll", controlNavbar);
+    };
+  }, [lastScrollY]);
+
   const navLinks = [
     { id: 1, text: "Home", href: "#", icon: FiHome },
     { id: 2, text: "About", href: "#about", icon: FiUser },
@@ -20,10 +48,28 @@ const Navbar = () => {
     { id: 6, text: "Contact", href: "#contact", icon: FiMessageSquare },
   ];
 
+  // Torn paper SVG mask data URI
+  const tornPaperMask =
+    "data:image/svg+xml,%3Csvg width='100%25' height='100%25' viewBox='0 0 1200 20' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 H1200 V15 L1180 18 L1140 14 L1100 17 L1060 13 L1020 18 L980 14 L940 17 L900 13 L860 18 L820 14 L780 17 L740 13 L700 18 L660 14 L620 17 L580 13 L540 18 L500 14 L460 17 L420 13 L380 18 L340 14 L300 17 L260 13 L220 18 L180 14 L140 17 L100 13 L60 18 L20 14 L0 18 Z' fill='%23000'/%3E%3C/svg%3E";
+
   return (
     <>
       {/* Desktop Navbar - Only show on lg screens and above */}
-      <nav className=" fixed w-full bg-background/90 backdrop-blur-md shadow-lg z-50">
+      <nav
+        className={`fixed w-full bg-background/90 backdrop-blur-md z-50 pb-5 transform transition-transform duration-300 ${
+          isVisible ? "translate-y-0" : "-translate-y-full lg:translate-y-0"
+        }`}
+        style={{
+          WebkitMaskImage: `url("${tornPaperMask}")`,
+          maskImage: `url("${tornPaperMask}")`,
+          WebkitMaskSize: "100% 100%",
+          maskSize: "100% 100%",
+          WebkitMaskRepeat: "no-repeat",
+          maskRepeat: "no-repeat",
+          filter:
+            "drop-shadow(0 1px 0 rgba(0,0,0,0.1)) drop-shadow(0 4px 6px rgba(0,0,0,0.1))",
+        }}
+      >
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}

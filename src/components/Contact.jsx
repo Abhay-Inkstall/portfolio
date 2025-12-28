@@ -13,10 +13,14 @@ import {
   FaMapMarkerAlt,
   FaCheck,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useRef, useLayoutEffect } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
+  const containerRef = useRef(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -119,14 +123,64 @@ const Contact = () => {
     },
   ];
 
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      // Title Animation
+      gsap.from(".contact-title", {
+        scrollTrigger: {
+          trigger: ".contact-title",
+          start: "top 85%",
+        },
+        y: 30,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+      });
+
+      // Split layout animation
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".contact-grid",
+          start: "top 75%",
+        },
+      });
+
+      tl.from(".contact-info", {
+        x: -50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+      }, 0)
+      .from(".contact-form", {
+        x: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+      }, 0.2);
+
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section
       id="contact"
-      className="py-20 bg-gradient-to-br from-background/5 to-primary/5"
+      ref={containerRef}
+      className="py-20 bg-gradient-to-br from-background/5 to-primary/5 overflow-hidden relative"
     >
-      <div className="max-w-7xl mx-auto px-4">
+      {/* Dot Pattern Background */}
+      <div 
+        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(#000000 1.5px, transparent 1.5px)",
+          backgroundSize: "24px 24px"
+        }}
+      />
+      
+      <div className="max-w-7xl mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className="contact-title text-center mb-16">
           <h2 className="text-4xl flex items-center justify-center gap-4 font-header text-primary mb-4">
             <MdOutlineEmojiEmotions className="w-10 h-10 text-primary" />{" "}
             <span className="hidden sm:inline">Let's</span> Connect
@@ -138,10 +192,10 @@ const Contact = () => {
         </div>
 
         {/* Contact Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="contact-grid grid grid-cols-1 md:grid-cols-2 gap-12">
           {/* Contact Info */}
-          <div className="space-y-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg">
+          <div className="contact-info space-y-8">
+            <div className="bg-white p-8 rounded-xl shadow-lg transform transition-all hover:scale-[1.02] duration-300">
               <h3 className="text-2xl font-semibold text-primary mb-4">
                 Contact Information
               </h3>
@@ -172,7 +226,7 @@ const Contact = () => {
               </div>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg">
+            <div className="bg-white p-8 rounded-xl shadow-lg transform transition-all hover:scale-[1.02] duration-300">
               <h3 className="text-2xl font-semibold text-primary mb-4">
                 Social Links
               </h3>
@@ -195,39 +249,27 @@ const Contact = () => {
               </div>
             </div>
             {/* WhatsApp Section */}
-            <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row items-start justify-between gap-4">
+            <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row items-start justify-between gap-4 transform transition-all hover:scale-[1.02] duration-300">
               <h3 className="text-2xl font-semibold text-primary mb-4">
                 WhatsApp Me
               </h3>
-              <motion.div
-                className="flex items-center justify-center gap-4"
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-              >
-                <motion.a
+              <div className="flex items-center justify-center gap-4 w-full md:w-auto">
+                <a
                   href="https://wa.me/918169805273?text=Hi%20Abhay,%20I%20found%20your%20portfolio%20and%20would%20like%20to%20connect!"
-                  className="flex justify-center w-full items-center gap-2 px-8 py-3 text-base font-medium text-white bg-primary hover:bg-secondary transition-all duration-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  whileHover={{
-                    scale: 1.02,
-                    boxShadow: "0 5px 15px -5px rgba(99, 102, 241, 0.5)",
-                  }}
-                  whileTap={{
-                    scale: 0.98,
-                    boxShadow: "0 2px 5px -2px rgba(99, 102, 241, 0.5)",
-                  }}
+                  className="flex justify-center w-full items-center gap-2 px-8 py-3 text-base font-medium text-white bg-primary hover:bg-secondary transition-all duration-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-md hover:-translate-y-1 active:scale-95"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <FaWhatsapp className="w-6 h-6" />
                   <span className="hidden sm:inline">Message on WhatsApp</span>
                   <span className="inline sm:hidden">WhatsApp</span>
-                </motion.a>
-              </motion.div>
+                </a>
+              </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="space-y-6">
+          <div className="contact-form space-y-6">
             <div className="bg-white p-8 rounded-xl shadow-lg">
               <h3 className="text-2xl font-semibold text-primary mb-6">
                 Send Me a Message
@@ -308,7 +350,7 @@ const Contact = () => {
                     id="message"
                     name="message"
                     required
-                    rows="3"
+                    rows="2"
                     value={formData.message}
                     onChange={handleChange}
                     disabled={isSubmitting}
@@ -318,27 +360,15 @@ const Contact = () => {
                 </div>
 
                 {/* Submit Button */}
-                <motion.div
-                  className="flex justify-end"
-                  whileTap={{ scale: 0.98 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                >
-                  <motion.button
+                <div className="flex justify-end">
+                  <button
                     type="submit"
                     disabled={isSubmitting}
                     className={`flex justify-center w-full items-center gap-2 px-8 py-3 text-base font-medium text-white ${
                       isSubmitting
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-primary hover:bg-secondary"
-                    } transition-all duration-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2`}
-                    whileHover={{
-                      scale: 1.02,
-                      boxShadow: "0 5px 15px -5px rgba(99, 102, 241, 0.5)",
-                    }}
-                    whileTap={{
-                      scale: 0.98,
-                      boxShadow: "0 2px 5px -2px rgba(99, 102, 241, 0.5)",
-                    }}
+                    } transition-all duration-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transform hover:-translate-y-1 active:scale-95`}
                   >
                     {isSubmitting ? (
                       <div className="flex items-center gap-2">
@@ -369,13 +399,13 @@ const Contact = () => {
                         <span>Send Message</span>
                       </>
                     )}
-                  </motion.button>
+                  </button>
                   {error && (
                     <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">
                       {error}
                     </div>
                   )}
-                </motion.div>
+                </div>
               </form>
             </div>
           </div>
