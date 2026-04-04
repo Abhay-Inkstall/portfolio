@@ -7,125 +7,167 @@ import {
   FiCode,
   FiMenu,
   FiLayers,
-  FiSend,
+  FiX,
+  FiArrowRight,
 } from "react-icons/fi";
 import logo from "../assets/logoBlack.png";
 
 const Navbar = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const controlNavbar = () => {
       if (typeof window !== "undefined") {
         if (window.scrollY > lastScrollY && window.scrollY > 50) {
-          // if scroll down hide the navbar
           setIsVisible(false);
+          if (isMenuOpen) setIsMenuOpen(false); // Close menu on scroll down
         } else {
-          // if scroll up show the navbar
           setIsVisible(true);
         }
-
-        // remember current page location to use in the next move
         setLastScrollY(window.scrollY);
       }
     };
 
     window.addEventListener("scroll", controlNavbar);
-
-    // cleanup function
-    return () => {
-      window.removeEventListener("scroll", controlNavbar);
-    };
-  }, [lastScrollY]);
+    return () => window.removeEventListener("scroll", controlNavbar);
+  }, [lastScrollY, isMenuOpen]);
 
   const navLinks = [
-    { id: 1, text: "Home", href: "#", icon: FiHome },
-    { id: 2, text: "About", href: "#about", icon: FiUser },
-    { id: 3, text: "Experience", href: "#experience", icon: FiBriefcase },
-    { id: 4, text: "Skills", href: "#skills", icon: FiCode },
-    { id: 5, text: "Projects", href: "#projects", icon: FiLayers },
-    { id: 6, text: "Contact", href: "#contact", icon: FiMessageSquare },
+    { id: "01", text: "Home", href: "#", icon: FiHome },
+    { id: "02", text: "About", href: "#about", icon: FiUser },
+    { id: "03", text: "Experience", href: "#experience", icon: FiBriefcase },
+    { id: "04", text: "Skills", href: "#skills", icon: FiCode },
+    { id: "05", text: "Projects", href: "#projects", icon: FiLayers },
+    { id: "06", text: "Contact", href: "#contact", icon: FiMessageSquare },
   ];
-
-  // Torn paper SVG mask data URI
-  const tornPaperMask =
-    "data:image/svg+xml,%3Csvg width='100%25' height='100%25' viewBox='0 0 1200 20' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 H1200 V15 L1180 18 L1140 14 L1100 17 L1060 13 L1020 18 L980 14 L940 17 L900 13 L860 18 L820 14 L780 17 L740 13 L700 18 L660 14 L620 17 L580 13 L540 18 L500 14 L460 17 L420 13 L380 18 L340 14 L300 17 L260 13 L220 18 L180 14 L140 17 L100 13 L60 18 L20 14 L0 18 Z' fill='%23000'/%3E%3C/svg%3E";
 
   return (
     <>
-      {/* Desktop Navbar - Only show on lg screens and above */}
-      <nav
-        className={`fixed w-full bg-background/90 backdrop-blur-md z-50 pb-5 transform transition-transform duration-300 ${
-          isVisible ? "translate-y-0" : "-translate-y-full lg:translate-y-0"
+      {/* Sidebar Overlay */}
+      <div 
+        className={`fixed inset-0 bg-primary/40 z-[60] backdrop-blur-sm transition-opacity duration-500 lg:hidden ${
+          isMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
         }`}
-        style={{
-          WebkitMaskImage: `url("${tornPaperMask}")`,
-          maskImage: `url("${tornPaperMask}")`,
-          WebkitMaskSize: "100% 100%",
-          maskSize: "100% 100%",
-          WebkitMaskRepeat: "no-repeat",
-          maskRepeat: "no-repeat",
-          filter:
-            "drop-shadow(0 1px 0 rgba(0,0,0,0.1)) drop-shadow(0 4px 6px rgba(0,0,0,0.1))",
-        }}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
+      {/* Slide-out Sidebar */}
+      <div 
+        className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-background z-[70] shadow-2xl transition-transform duration-500 ease-in-out lg:hidden border-r-8 border-primary bg-news-dots ${
+          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
       >
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <a
-                href="#"
-                className="text-2xl font-header outline-none text-primary text-center flex items-center gap-2"
-              >
-                <img src={logo} alt="Logo" className="h-10 w-auto" />
-                <span>Abhay Kumar Das</span>
-              </a>
+        <div className="p-8 h-full flex flex-col">
+          {/* Sidebar Header */}
+          <div className="flex justify-between items-start mb-16 border-b-2 border-primary pb-6">
+            <div className="flex flex-col gap-2">
+              <img src={logo} alt="LOGO" className="h-10 w-auto grayscale contrast-125 translate-x-[-4px]" />
+              <span className="uppercase-label text-[0.6rem] font-black tracking-[0.2em] opacity-50">Edition 2024.01</span>
             </div>
-
-            <div className="hidden lg:flex items-center space-x-8">
-              {navLinks.slice(0, -1).map((link) => (
-                <a
-                  key={link.id}
-                  href={link.href}
-                  className="flex items-center font-light md:font-semibold gap-2 group relative outline-none text-gray-600 md:text-gray-800 hover:text-primary transition-all duration-300"
-                >
-                  <link.icon className="w-5 h-5 text-primary transition-transform duration-300 group-hover:scale-110" />
-                  <span className="relative">
-                    {link.text}
-                    <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-all duration-300 opacity-0 group-hover:opacity-100"></span>
-                  </span>
-                </a>
-              ))}
-              <a
-                href="#contact"
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors duration-300 font-medium flex items-center gap-2 group"
-              >
-                <FiSend className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                <span>Hire Now</span>
-              </a>
-            </div>
+            <button 
+              onClick={() => setIsMenuOpen(false)}
+              className="p-2 border-2 border-primary hover:bg-accent hover:border-accent hover:text-background transition-all"
+            >
+              <FiX className="w-6 h-6" />
+            </button>
           </div>
-        </div>
-      </nav>
 
-      {/* Mobile & Tablet Bottom Navigation */}
-      <nav className="lg:hidden fixed bottom-0 left-0 w-full bg-background/90 backdrop-blur-md shadow-lg z-50">
-        <div className="container mx-auto px-2 md:px-4">
-          <div className="flex items-center justify-around h-16 max-w-2xl mx-auto">
+          {/* Sidebar Links */}
+          <nav className="flex flex-col gap-8 flex-grow">
             {navLinks.map((link) => (
               <a
                 key={link.id}
                 href={link.href}
-                className="flex flex-col items-center justify-center text-gray-700 hover:text-primary transition-all duration-300"
+                onClick={() => setIsMenuOpen(false)}
+                className="group flex items-baseline gap-6"
               >
-                <link.icon className="w-6 h-6 text-primary transition-transform duration-300 group-hover:scale-110" />
-                <span className="text-xs relative">
+                <span className="mono-data text-xs font-black text-accent opacity-40 group-hover:opacity-100 transition-opacity">
+                  [{link.id}]
+                </span>
+                <span className="headline-serif text-3xl font-black uppercase tracking-tighter text-primary group-hover:text-accent group-hover:translate-x-2 transition-all duration-300">
                   {link.text}
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-all duration-300 opacity-0 group-hover:opacity-100"></span>
                 </span>
               </a>
             ))}
+          </nav>
+
+          {/* Sidebar Footer */}
+          <div className="mt-auto border-t-2 border-primary pt-8 pb-4">
+            <a 
+              href="#contact" 
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center justify-between bg-primary text-background p-4 uppercase-label text-xs font-black hover:bg-accent transition-all group"
+            >
+              <span>Secure Subscription</span>
+              <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <nav
+        className={`fixed w-full bg-background z-50 transition-transform duration-300 ${
+          isVisible ? "translate-y-0" : "-translate-y-full lg:translate-y-0"
+        } border-b-4 border-primary`}
+      >
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between py-2 lg:py-0">
+          {/* Hamburger & Logo Left */}
+          <div className="flex items-center gap-4 flex-shrink-0">
+            {/* Hamburger Trigger (Mobile only) */}
+            <button 
+              onClick={() => setIsMenuOpen(true)}
+              className="lg:hidden p-2 border-2 border-primary hover:bg-primary hover:text-background transition-all active:scale-95"
+            >
+              <FiMenu className="w-6 h-6" />
+            </button>
+
+            <a href="#" className="flex items-center gap-3 group">
+              <img src={logo} alt="LOGO" className="h-8 lg:h-10 w-auto grayscale contrast-125 group-hover:grayscale-0 transition-all ml-1 lg:ml-0" />
+              <span className="headline-serif text-lg lg:text-2xl font-black uppercase tracking-tighter leading-none hidden sm:block">
+                ABHAY KUMAR DAS
+              </span>
+            </a>
+          </div>
+
+          {/* Edition Info (Desktop only) */}
+          <div className="hidden xl:flex border border-primary px-4 py-1 items-center gap-4 mono-data text-[0.6rem] font-black uppercase bg-background shadow-[3px_3px_0px_0px_rgba(17,17,17,1)]">
+            <div className="flex items-center gap-3 border-r border-primary/20 pr-4">
+              <span className="text-accent">VOL. 024</span>
+              <span className="w-1 h-1 bg-primary/20 rounded-full"></span>
+              <span>NO. 001</span>
+            </div>
+            <div className="flex items-center gap-3 border-r border-primary/20 pr-4">
+              <span>{new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</span>
+            </div>
+            <div className="flex items-center">
+              <span>MUMBAI EDITION</span>
+            </div>
+          </div>
+
+          {/* Desktop Links & CTA */}
+          <div className="flex items-center gap-4 lg:gap-8">
+            <div className="hidden lg:flex gap-6 uppercase-label text-[0.65rem] font-black">
+              {navLinks.slice(1, -1).map((link) => (
+                <a
+                  key={link.id}
+                  href={link.href}
+                  className="hover:text-accent transition-all duration-200 relative group py-1"
+                >
+                  {link.text}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
+                </a>
+              ))}
+            </div>
+            
+            <a 
+              href="#contact" 
+              className="bg-primary text-background px-6 py-2 uppercase-label text-[0.65rem] font-black hover:bg-accent hover:text-background transition-all duration-300 active:scale-95 shadow-[4px_4px_0px_0px_rgba(17,17,17,0.1)]"
+            >
+              Hire Me
+            </a>
           </div>
         </div>
       </nav>

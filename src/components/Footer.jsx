@@ -1,6 +1,6 @@
 import logo from "../assets/logoBlack.png";
 
-const Footer = () => {
+const Footer = ({ isSepia, setIsSepia }) => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -12,121 +12,111 @@ const Footer = () => {
     "polygon(0% 20px, 1.3% 7px, 3.8% 19px, 6.1% 6px, 9.5% 18px, 11.2% 5px, 14.8% 19px, 16.5% 8px, 19.2% 17px, 21.8% 4px, 24.5% 18px, 28% 6px, 30.2% 19px, 34.5% 5px, 36.8% 18px, 40.2% 7px, 43.5% 19px, 45.8% 4px, 49.2% 18px, 51.5% 7px, 54.8% 19px, 58.2% 5px, 61.5% 18px, 64.2% 8px, 67.8% 19px, 70.5% 6px, 73.2% 18px, 77.5% 5px, 80.8% 19px, 83.2% 7px, 86.5% 18px, 89.2% 4px, 92.5% 19px, 95.8% 6px, 98.2% 18px, 100% 20px, 100% 100%, 0% 100%)";
 
   return (
-    <div
-      className="relative"
-      style={{ filter: "drop-shadow(0 -5px 10px rgba(0,0,0,0.1))" }}
-    >
-      <footer
-        className="bg-background/5 pt-16"
-        style={{ clipPath: footerClipPath }}
-      >
-        <div className="footer-content max-w-7xl mx-auto px-4 pb-20 lg:pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* About */}
-          <div className="footer-column space-y-2">
-            <div className="flex items-start flex-col gap-1">
-              <img src={logo} alt="Logo" className="h-20 w-auto" />
-              <h3 className="text-xl font-header text-primary">
-                About Me
-              </h3>
-            </div>
-            <p className="text-gray-600">
-              Passionate Full Stack Developer with expertise in building
-              scalable and efficient web applications.
-            </p>
-          </div>
-
-          {/* Quick Links */}
-          <div className="footer-column space-y-4">
-            <h3 className="text-lg font-header text-primary mb-4">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              {[
-                { href: "#about", text: "About" },
-                { href: "#projects", text: "Projects" },
-                { href: "#skills", text: "Skills" },
-                { href: "#contact", text: "Contact" },
-                { href: "#experience", text: "Experience" },
-              ].map((link, index) => (
-                <li
-                  key={index}
-                  className="transform transition-transform duration-300 hover:translate-x-1"
-                >
-                  <a
-                    href={link.href}
-                    className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                  >
-                    <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                      →
-                    </span>
-                    <span className="group-hover:translate-x-2 transition-transform duration-300">
-                      {link.text}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div className="footer-column space-y-4 hidden md:block">
-            <h3 className="text-lg font-header text-primary mb-4">
-              Contact
-            </h3>
-            <ul className="space-y-2">
-              <li className="transform transition-transform duration-300 hover:translate-x-1">
-                <a
-                  href="mailto:abhay744das@gmail.com"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    Email: abhay744das@gmail.com
-                  </span>
-                </a>
-              </li>
-              <li className="transform transition-transform duration-300 hover:translate-x-1">
-                <a
-                  href="tel:+918169805273"
-                  className="relative text-gray-600 hover:text-primary transition-all duration-300 group"
-                >
-                  <span className="absolute -left-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    →
-                  </span>
-                  <span className="group-hover:translate-x-2 transition-transform duration-300">
-                    Phone: +91 8169805273
-                  </span>
-                </a>
-              </li>
-            </ul>
+    <footer className="bg-background py-20 border-t-8 border-primary relative overflow-hidden transition-colors duration-700">
+      <div className="container mx-auto px-4">
+        {/* Pre-Footer CTA Section - Modern Style */}
+        <div className="bg-primary text-background p-12 md:p-20 mb-20 flex flex-col items-center text-center">
+          <h2 className="headline-serif text-4xl md:text-7xl font-black mb-8 leading-tight max-w-4xl">
+            Ready to transform your workflow?
+          </h2>
+          <p className="text-sm md:text-lg mb-12 opacity-80 max-w-2xl font-medium">
+            Join the ranks of innovative brands already leveraging advanced web solutions to drive engagement and achieve unparalleled success in the digital editorial space.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6">
+            <a 
+              href="#contact" 
+              className="bg-background text-primary px-10 py-5 uppercase-label text-sm font-black hover:bg-neutral-200 transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(204,0,0,1)]"
+            >
+              Start Collaboration
+            </a>
+            <a 
+              href="#contact" 
+              className="border-2 border-background text-background px-10 py-5 uppercase-label text-sm font-black hover:bg-background hover:text-primary transition-all duration-300"
+            >
+              Schedule a Call
+            </a>
           </div>
         </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+          {/* Column 1: Branding & Edition Info */}
+          <div>
+            <div className="mb-8 border-b-2 border-primary pb-4">
+              <img src={logo} alt="LOGO" className="h-10 w-auto grayscale contrast-125 mb-4" />
+              <h3 className="uppercase-label text-[0.6rem] font-black tracking-widest opacity-60">MASTHEAD_REGISTERED</h3>
+            </div>
+            <div className="mono-data text-[0.65rem] font-black text-primary leading-loose tracking-tighter">
+              <p>SERIES: {new Date().getFullYear()}</p>
+              <p>VOL. {new Date().getFullYear() % 100}.5 // ISSUE 01</p>
+              <p>LOC: MUMBAI, INDIA [19.21°N, 72.85°E]</p>
+              <p className="mt-4 text-accent">STATUS: CONTINUOUS_UPDATE</p>
+            </div>
+            
+            {/* Theme Toggle Button */}
+            <button 
+              onClick={() => setIsSepia(!isSepia)}
+              className="mt-8 flex items-center gap-3 border-2 border-primary px-4 py-2 hover:bg-primary hover:text-background transition-all duration-300 group"
+            >
+              <div className={`w-3 h-3 rounded-full ${isSepia ? 'bg-accent' : 'bg-primary group-hover:bg-background'} transition-colors`}></div>
+              <span className="uppercase-label text-[0.6rem] font-black">Daily Edition: {isSepia ? 'Sepia' : 'Standard'}</span>
+            </button>
+          </div>
+
+          {/* Column 2: Staff */}
+          <div>
+            <h3 className="uppercase-label text-sm font-black mb-8 border-b-2 border-primary pb-2 inline-block">BUREAU_STAFF</h3>
+            <ul className="mono-data text-[0.65rem] font-black text-primary space-y-3 uppercase tracking-tighter">
+              <li className="flex justify-between border-b border-primary/10 pb-1"><span>EDITOR:</span> <span>ABHAY DAS</span></li>
+              <li className="flex justify-between border-b border-primary/10 pb-1"><span>UX_DESIGN:</span> <span>NEWS_SYSTEM</span></li>
+              <li className="flex justify-between border-b border-primary/10 pb-1"><span>DEV_OPS:</span> <span>SCRIPTS_V4.0</span></li>
+              <li className="flex justify-between border-b border-primary/10 pb-1"><span>TYPOGRAPHY:</span> <span>SERIF_STACK</span></li>
+            </ul>
+          </div>
+
+          {/* Column 3: Index */}
+          <div>
+            <h3 className="uppercase-label text-sm font-black mb-8 border-b-2 border-primary pb-2 inline-block">ARCHIVE_INDEX</h3>
+            <ul className="mono-data text-xs font-black text-primary space-y-3 uppercase tracking-tighter">
+              <li><a href="#about" className="hover:text-accent hover:underline flex items-center gap-2"><span>[01]</span> BIOGRAPHY</a></li>
+              <li><a href="#experience" className="hover:text-accent hover:underline flex items-center gap-2"><span>[02]</span> CAREER_LOG</a></li>
+              <li><a href="#projects" className="hover:text-accent hover:underline flex items-center gap-2"><span>[03]</span> INSIGHTS</a></li>
+              <li><a href="#skills" className="hover:text-accent hover:underline flex items-center gap-2"><span>[04]</span> TECH_SPECS</a></li>
+            </ul>
+          </div>
+
+          {/* Column 4: Legal & Controls */}
+          <div className="flex flex-col justify-between items-start lg:items-end">
+            <div className="text-left lg:text-right w-full">
+               <h3 className="uppercase-label text-sm font-black mb-8 border-b-2 border-primary pb-2 inline-block">LEGAL_DOSSIER</h3>
+               <p className="mono-data text-[0.65rem] font-black text-muted-text uppercase leading-loose">
+                 © {new Date().getFullYear()} ALL RIGHTS RESERVED.<br/>
+                 UNAUTHORIZED DUPLICATION IS A BREACH OF TERMS.<br/>
+                 IP_TRACKING: ACTIVE
+               </p>
+            </div>
+            <button 
+              onClick={scrollToTop}
+              className="mt-12 border-4 border-primary p-4 w-14 h-14 flex items-center justify-center hover:bg-accent hover:text-background transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] group"
+              title="Return to Masthead"
+            >
+              <span className="font-black text-2xl group-hover:-translate-y-1 transition-transform">↑</span>
+            </button>
+          </div>
+        </div>
+        
+        {/* Final Colophon Line */}
+        <div className="border-t-4 border-primary pt-10 flex flex-col md:flex-row justify-between items-center gap-6 text-[0.65rem] font-black uppercase-label tracking-[0.3em]">
+           <span className="bg-primary text-background px-4 py-1">FINAL EDITION // COMPLETED</span>
+           <span className="text-center">PRODUCED WITH PRIDE BY ABHAY KUMAR DAS</span>
+           <span className="opacity-50 underline">END_OF_TRANSMISSION</span>
+        </div>
       </div>
-      {/* Floating Back to Top Button */}
-      <button
-        onClick={scrollToTop}
-        className="scroll-top-btn hidden lg:block lg:fixed bottom-6 right-6 z-50 p-2 bg-primary rounded-lg shadow-lg hover:bg-primary/90 transition-colors duration-200"
-        title="Scroll to Top"
-      >
-        <svg
-          className="w-5 h-5 text-white"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 10l7-7m0 0l7 7m-7-7v18"
-          />
-        </svg>
-      </button>
-      </footer>
-    </div>
+
+      {/* Background Page Number Decor */}
+      <div className="absolute top-[-50px] right-[-30px] opacity-5 text-[15rem] font-black uppercase-label select-none pointer-events-none rotate-12">
+        FIN
+      </div>
+    </footer>
   );
 };
 

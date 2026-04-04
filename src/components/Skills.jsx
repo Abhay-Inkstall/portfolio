@@ -72,83 +72,93 @@ const Skills = () => {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(".skills-title", {
-        scrollTrigger: {
-          trigger: ".skills-title",
-          start: "top 80%",
-        },
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-      });
+      gsap.fromTo(
+        ".skills-title",
+        { y: 30, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".skills-title",
+            start: "top 90%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
 
-      gsap.from(".skill-card", {
-        scrollTrigger: {
-          trigger: ".skills-grid",
-          start: "top 80%",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: "power3.out",
-      });
+      gsap.fromTo(
+        ".skill-card",
+        { y: 50, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".skills-grid",
+            start: "top 90%",
+            toggleActions: "play none none none",
+          },
+        }
+      );
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="skills" ref={containerRef} className="py-20 overflow-hidden relative">
-      {/* Dot Pattern Background */}
-      <div 
-        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#000000 1.5px, transparent 1.5px)",
-          backgroundSize: "24px 24px"
-        }}
-      />
-      
+    <section id="skills" ref={containerRef} className="py-20 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots">
       <div className="container mx-auto px-4 relative z-10">
-        <div className="skills-title text-center mb-16">
-          <h2 className="text-4xl font-header text-primary flex items-center gap-4 justify-center mb-4">
-            <FiCode className="w-10 h-10 text-primary" />
-            <span className="hidden sm:inline">Technical</span> Skills
-          </h2>
-          <p className="text-text max-w-2xl mx-auto">
-            A comprehensive set of technical skills and expertise
-          </p>
+        {/* Section Header */}
+        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-12 skills-title">
+          <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">Technical Specs</h2>
+          <span className="uppercase-label text-muted-text hidden md:block">Stack Inventory / Index {new Date().getFullYear() % 100}.0</span>
         </div>
 
-        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-8">
           {skillCategories.map((category) => (
             <div
               key={category.id}
-              className="skill-card bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+              className="skill-card border-4 border-primary bg-white shadow-[10px_10px_0px_0px_rgba(17,17,17,1)] flex flex-col group hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[14px_14px_0px_0px_rgba(17,17,17,1)] transition-all duration-300"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <category.icon className="w-6 h-6 text-primary mr-3" />
-                  <h3 className="text-xl font-semibold text-primary">
-                    {category.title}
-                  </h3>
+              <div className="bg-primary text-background p-4 flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <category.icon className="w-6 h-6 border-2 border-background p-0.5" />
+                  <h3 className="uppercase-label text-sm font-black tracking-widest">{category.title.toUpperCase()}</h3>
                 </div>
+                <span className="mono-data text-[0.6rem] font-bold opacity-50 underline">REF: {category.id}A</span>
               </div>
-
-              <div className="space-y-2">
+              
+              <div className="p-6 grid grid-cols-2 gap-3 bg-background/50">
                 {category.skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="inline-block bg-primary/10 text-primary px-3 py-1 rounded-full text-sm mx-0.5 my-1"
+                  <div 
+                    key={index} 
+                    className="border-2 border-primary p-2 flex items-center gap-3 bg-white hover:bg-accent hover:text-background hover:border-accent transition-all duration-200"
                   >
-                    {skill}
-                  </span>
+                    <div className="w-2 h-2 bg-primary group-hover:bg-background scale-75 rotate-45 flex-shrink-0"></div>
+                    <span className="mono-data text-[0.65rem] font-black uppercase overflow-hidden text-ellipsis whitespace-nowrap">{skill}</span>
+                  </div>
                 ))}
+              </div>
+              
+              <div className="mt-auto border-t-2 border-primary p-3 bg-neutral-100 flex justify-between items-center px-6">
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></span>
+                  <span className="uppercase-label text-[0.55rem] font-black">SYSTEM_OPTIMIZED</span>
+                </div>
+                <span className="mono-data text-[0.55rem] font-black">COMPATIBILITY: 100%</span>
               </div>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute top-10 right-[-5%] text-[10rem] font-black text-primary/5 select-none pointer-events-none uppercase-label rotate-12">
+        STACK
       </div>
     </section>
   );

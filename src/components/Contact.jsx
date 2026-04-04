@@ -167,249 +167,149 @@ const Contact = () => {
     <section
       id="contact"
       ref={containerRef}
-      className="py-20 bg-gradient-to-br from-background/5 to-primary/5 overflow-hidden relative"
+      className="py-20 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
     >
-      {/* Dot Pattern Background */}
-      <div 
-        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
-        style={{
-          backgroundImage: "radial-gradient(#000000 1.5px, transparent 1.5px)",
-          backgroundSize: "24px 24px"
-        }}
-      />
-      
-      <div className="max-w-7xl mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="contact-title text-center mb-16">
-          <h2 className="text-4xl flex items-center justify-center gap-4 font-header text-primary mb-4">
-            <MdOutlineEmojiEmotions className="w-10 h-10 text-primary" />{" "}
-            <span className="hidden sm:inline">Let's</span> Connect
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            I'm always open to discussing new projects, creative ideas, or
-            opportunities to be part of your visions.
-          </p>
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Page Header */}
+        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-16 contact-title">
+          <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary leading-none">Classifieds: Connect</h2>
+          <span className="uppercase-label text-muted-text hidden md:block font-black underline tracking-widest">CORRESPONDENCE / SECTION B</span>
         </div>
 
-        {/* Contact Grid */}
-        <div className="contact-grid grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Contact Info */}
-          <div className="contact-info space-y-8">
-            <div className="bg-white p-8 rounded-xl shadow-lg transform transition-all hover:scale-[1.02] duration-300">
-              <h3 className="text-2xl font-semibold text-primary mb-4">
-                Contact Information
-              </h3>
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <FaEnvelope className="w-6 h-6 text-accent mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-lg font-medium">Email</h4>
-                    <p className="text-gray-600">abhay744das@gmail.com</p>
-                  </div>
+        <div className="contact-grid grid grid-cols-1 md:grid-cols-12 gap-12">
+          {/* Left Column - Contact Details & Socials */}
+          <div className="md:col-span-4 flex flex-col gap-8 contact-info">
+            <div className="border-4 border-primary p-8 bg-white shadow-[10px_10px_0px_0px_rgba(17,17,17,1)] group hover:-translate-y-1 transition-all">
+              <h3 className="uppercase-label text-xl font-black mb-8 border-b-4 border-primary pb-2 text-primary">Direct Line</h3>
+              <div className="space-y-8 mono-data text-xs font-black">
+                <div className="flex flex-col gap-2 border-b-2 border-primary/10 pb-6 group-hover:border-accent transition-colors">
+                  <span className="text-accent underline text-[0.6rem]">RETURN_ADDR@EMAIL:</span>
+                  <span className="text-primary truncate text-sm">ABHAY744DAS@GMAIL.COM</span>
                 </div>
-                <div className="flex items-start">
-                  <FaPhone className="w-6 h-6 text-accent mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-lg font-medium">Phone</h4>
-                    <p className="text-gray-600">+91 8169805273</p>
-                  </div>
+                <div className="flex flex-col gap-2 border-b-2 border-primary/10 pb-6 group-hover:border-accent transition-colors">
+                  <span className="text-accent underline text-[0.6rem]">TELECOMM_SIGNAL:</span>
+                  <span className="text-primary text-sm">+91 8169805273</span>
                 </div>
-                <div className="flex items-start">
-                  <FaMapMarkerAlt className="w-6 h-6 text-accent mr-3 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-lg font-medium">Location</h4>
-                    <p className="text-gray-600">
-                      Kandivali West, Mumbai, India
-                    </p>
-                  </div>
+                <div className="flex flex-col gap-2">
+                  <span className="text-accent underline text-[0.6rem]">GLOBAL_BUREAU:</span>
+                  <span className="text-primary uppercase text-sm">MUMBAI, INDIA</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-8 rounded-xl shadow-lg transform transition-all hover:scale-[1.02] duration-300">
-              <h3 className="text-2xl font-semibold text-primary mb-4">
-                Social Links
-              </h3>
-              <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+            <div className="border-4 border-primary p-8 bg-neutral-100 shadow-[10px_10px_0px_0px_rgba(17,17,17,1)]">
+              <h3 className="uppercase-label text-xl font-black mb-8 border-b-4 border-primary pb-2 text-primary">Social Registry</h3>
+              <div className="grid grid-cols-3 gap-6">
                 {socialLinks.map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    className="text-primary hover:text-secondary transition-colors duration-300 group relative"
-                    target="_blank"
+                  <a 
+                    key={link.id} 
+                    href={link.url} 
+                    target="_blank" 
                     rel="noopener noreferrer"
-                    aria-label={link.name}
+                    className="border-2 border-primary p-4 flex items-center justify-center bg-white hover:bg-accent transition-all duration-300 group hover:shadow-[4px_4px_0px_0px_rgba(17,17,17,1)]"
                   >
-                    <link.icon className="w-6 h-6 text-primary group-hover:text-secondary transition-all duration-300 group-hover:scale-110" />
-                    <span className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 text-xs text-gray-600 whitespace-nowrap transition-opacity duration-300">
-                      {link.name}
-                    </span>
+                    <link.icon className="w-6 h-6 text-primary group-hover:text-background transition-colors" />
                   </a>
                 ))}
               </div>
             </div>
-            {/* WhatsApp Section */}
-            <div className="bg-white p-8 rounded-xl shadow-lg flex flex-col md:flex-row items-start justify-between gap-4 transform transition-all hover:scale-[1.02] duration-300">
-              <h3 className="text-2xl font-semibold text-primary mb-4">
-                WhatsApp Me
-              </h3>
-              <div className="flex items-center justify-center gap-4 w-full md:w-auto">
-                <a
-                  href="https://wa.me/918169805273?text=Hi%20Abhay,%20I%20found%20your%20portfolio%20and%20would%20like%20to%20connect!"
-                  className="flex justify-center w-full items-center gap-2 px-8 py-3 text-base font-medium text-white bg-primary hover:bg-secondary transition-all duration-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 hover:shadow-md hover:-translate-y-1 active:scale-95"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FaWhatsapp className="w-6 h-6" />
-                  <span className="hidden sm:inline">Message on WhatsApp</span>
-                  <span className="inline sm:hidden">WhatsApp</span>
-                </a>
-              </div>
-            </div>
+
+            {/* WhatsApp Classified ad */}
+            <a
+              href="https://wa.me/918169805273"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-4 border-primary p-6 bg-accent text-background flex flex-col items-center gap-2 hover:scale-[1.02] transition-transform shadow-[10px_10px_0px_0px_rgba(17,17,17,1)]"
+            >
+              <FaWhatsapp className="w-8 h-8" />
+              <span className="uppercase-label font-black text-center text-sm">Urgent Dispatch via WhatsApp</span>
+            </a>
           </div>
 
-          {/* Contact Form */}
-          <div className="contact-form space-y-6">
-            <div className="bg-white p-8 rounded-xl shadow-lg">
-              <h3 className="text-2xl font-semibold text-primary mb-6">
-                Send Me a Message
-              </h3>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Name */}
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
+          {/* Right Column - The Form */}
+          <div className="md:col-span-8 border-4 border-primary p-8 md:p-12 bg-white shadow-[15px_15px_0px_0px_rgba(17,17,17,1)] contact-form">
+            <h3 className="headline-serif text-3xl md:text-5xl font-black mb-10 border-b-4 border-primary pb-6 uppercase tracking-tighter text-primary">Letter to the Editor</h3>
+            <form onSubmit={handleSubmit} className="space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-3">
+                  <label className="uppercase-label text-xs font-black text-primary">Subject Name (Full)</label>
+                  <input 
+                    type="text" 
                     name="name"
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    disabled={isSubmitting}
-                    className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-200 focus:outline-none shadow-sm hover:border-gray-300"
-                    placeholder="Your Name"
+                    placeholder="ENTER NAME"
+                    className="w-full border-b-4 border-primary p-4 mono-data text-sm font-black focus:outline-none focus:border-accent transition-colors bg-neutral-50 placeholder:opacity-30"
                   />
                 </div>
-
-                {/* Email */}
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Email
-                  </label>
-                  <input
+                <div className="space-y-3">
+                  <label className="uppercase-label text-xs font-black text-primary">Return Routing (Email)</label>
+                  <input 
                     type="email"
-                    id="email"
                     name="email"
                     required
                     value={formData.email}
                     onChange={handleChange}
-                    disabled={isSubmitting}
-                    className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:border-gray-300"
-                    placeholder="your.email@example.com"
+                    placeholder="USER@DOMAIN.COM"
+                    className="w-full border-b-4 border-primary p-4 mono-data text-sm font-black focus:outline-none focus:border-accent transition-colors bg-neutral-50 placeholder:opacity-30"
                   />
                 </div>
+              </div>
+              
+              <div className="space-y-3">
+                <label className="uppercase-label text-xs font-black text-primary">Context / Thread Subject</label>
+                <input 
+                  type="text"
+                  name="subject"
+                  required
+                  value={formData.subject}
+                  onChange={handleChange}
+                  placeholder="RE: PROJECT INQUIRY // 2024"
+                  className="w-full border-b-4 border-primary p-4 mono-data text-sm font-black focus:outline-none focus:border-accent transition-colors bg-neutral-50 placeholder:opacity-30"
+                />
+              </div>
 
-                {/* Subject */}
-                <div>
-                  <label
-                    htmlFor="subject"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    required
-                    value={formData.subject}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                    className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:border-gray-300"
-                    placeholder="Project Inquiry"
-                  />
-                </div>
+              <div className="space-y-3">
+                <label className="uppercase-label text-xs font-black text-primary">The Correspondance Body</label>
+                <textarea 
+                  rows="5"
+                  name="message"
+                  required
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="TYPE YOUR MESSAGE HERE... EVERY CHARACTER COUNTS."
+                  className="w-full border-4 border-primary p-6 mono-data text-sm font-black focus:outline-none focus:border-accent transition-colors bg-neutral-50 resize-none placeholder:opacity-30 min-h-[200px]"
+                />
+              </div>
 
-                {/* Message */}
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-gray-700 mb-2"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    required
-                    rows="2"
-                    value={formData.message}
-                    onChange={handleChange}
-                    disabled={isSubmitting}
-                    className="w-full px-4 py-3 border-2 border-gray-100 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all duration-200 shadow-sm hover:border-gray-300"
-                    placeholder="Tell me about your project..."
-                  />
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className={`flex justify-center w-full items-center gap-2 px-8 py-3 text-base font-medium text-white ${
-                      isSubmitting
-                        ? "bg-gray-400 cursor-not-allowed"
-                        : "bg-primary hover:bg-secondary"
-                    } transition-all duration-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transform hover:-translate-y-1 active:scale-95`}
-                  >
-                    {isSubmitting ? (
-                      <div className="flex items-center gap-2">
-                        <div className="flex space-x-1">
-                          <div
-                            className="w-2 h-2 bg-white rounded-full animate-bounce"
-                            style={{ animationDelay: "0ms" }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 bg-white rounded-full animate-bounce"
-                            style={{ animationDelay: "150ms" }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 bg-white rounded-full animate-bounce"
-                            style={{ animationDelay: "300ms" }}
-                          ></div>
-                        </div>
-                        <span>Sending</span>
-                      </div>
-                    ) : isSuccess ? (
-                      <div className="flex items-center gap-2">
-                        <FaCheck className="w-4 h-4 text-white" />
-                        <span>Message Sent!</span>
-                      </div>
-                    ) : (
-                      <>
-                        <FaPaperPlane className="w-4 h-4" />
-                        <span>Send Message</span>
-                      </>
-                    )}
-                  </button>
-                  {error && (
-                    <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-lg">
-                      {error}
-                    </div>
-                  )}
-                </div>
-              </form>
-            </div>
+              <button 
+                type="submit"
+                disabled={isSubmitting}
+                className={`w-full py-6 uppercase-label text-xl font-black transition-all duration-300 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] active:translate-y-1 active:shadow-none border-4 border-primary flex justify-center items-center gap-4 ${
+                  isSubmitting ? "bg-neutral-200 text-primary cursor-not-allowed" : "bg-primary text-background hover:bg-accent hover:border-accent"
+                }`}
+              >
+                {isSubmitting ? (
+                   <span className="animate-pulse">TRANSMITTING...</span>
+                ) : isSuccess ? (
+                   <div className="flex items-center gap-3">
+                     <FaCheck /> <span>DISPATCH SENT</span>
+                   </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <FaPaperPlane className="rotate-12" /> <span>SEND DISPATCH</span>
+                  </div>
+                )}
+              </button>
+            </form>
           </div>
         </div>
+      </div>
+
+      {/* Background Page Number Decor */}
+      <div className="absolute bottom-10 left-10 opacity-5 text-[8rem] font-black uppercase-label select-none pointer-events-none">
+        0B2
       </div>
     </section>
   );

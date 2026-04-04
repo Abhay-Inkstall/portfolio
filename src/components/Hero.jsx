@@ -45,57 +45,104 @@ const Hero = () => {
   return (
     <section
       ref={containerRef}
-      className="relative h-screen flex items-center justify-center bg-background/5 overflow-hidden"
+      className="relative pt-20 lg:pt-28 pb-20 px-4 container mx-auto bg-background bg-news-dots"
     >
-      {/* Background Pattern */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-20"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-b-4 border-primary pb-12 hero-content">
+        {/* Left Column - Main Headline */}
+        <div className="lg:col-span-8 flex flex-col gap-8">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 bg-accent"></span>
+            <span className="uppercase-label text-accent font-black text-sm">Breaking Development</span>
+          </div>
+          
+          <h1 className="headline-serif text-5xl md:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-primary">
+            Transforming <br /> 
+            the way your <br /> 
+            <span className="italic text-accent">ideas</span> work
+          </h1>
 
-      {/* Content */}
-      <div className="hero-content relative text-center px-4">
-        <h1 className="text-5xl md:text-7xl text-primary mb-6 font-header font-light">
-          Hi, I'm Abhay Kumar Das
-        </h1>
-        <p className="text-2xl md:text-3xl text-text mb-8">
-          Software Developer & Tech Enthusiast
-        </p>
-
-        {/* Social Links */}
-        <div className="hero-social flex justify-center gap-6">
-          <a
-            href="https://github.com/Innocent-Alive"
-            className="text-primary hover:text-secondary transition-colors duration-300 transform hover:scale-110"
-            aria-label="GitHub"
-          >
-            <FaGithub className="w-8 h-8" />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/innocent-alive/"
-            className="text-primary hover:text-secondary transition-colors duration-300 transform hover:scale-110"
-            aria-label="LinkedIn"
-          >
-            <FaLinkedin className="w-8 h-8" />
-          </a>
-          <a
-            href="https://www.facebook.com/TheInnocentAlive"
-            className="text-primary hover:text-secondary transition-colors duration-300 transform hover:scale-110"
-            aria-label="Facebook"
-          >
-            <FaFacebook className="w-8 h-8" />
-          </a>
+          <div className="flex flex-col md:flex-row gap-10 items-start mt-4">
+            <div className="relative">
+              <p className="text-xl md:text-2xl leading-tight text-primary font-medium max-w-2xl text-justify">
+                <span className="float-left text-8xl font-header font-black mr-4 leading-[0.7] text-primary mt-2">A</span>
+                bhay Kumar Das brings your digital vision to life with a robust technical arsenal. 
+                Specializing in building scalable web applications and intuitive mobile experiences 
+                that drive user engagement and business growth in an ever-evolving digital landscape.
+              </p>
+              
+              <div className="flex flex-wrap gap-4 mt-10">
+                <a 
+                  href="#contact" 
+                  className="bg-primary text-background px-10 py-4 uppercase-label text-sm font-black hover:bg-accent transition-colors duration-300"
+                >
+                  Start Collaboration
+                </a>
+                <a 
+                  href="#projects" 
+                  className="border-2 border-primary px-10 py-4 uppercase-label text-sm font-black hover:bg-neutral-100 transition-colors duration-300"
+                >
+                  View Archives
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Hire Now Button - Only visible on tablet and mobile */}
-        <div className="block lg:hidden mt-16">
-          <a
-            href="#contact"
-            className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-md hover:bg-primary/90 transition-all duration-300 hover:scale-105 active:scale-95 font-medium text-lg"
-          >
-            <FiSend className="w-5 h-5" />
-            <span>Hire Now</span>
-          </a>
+        {/* Right Column - "Market Watch" / Sidebar */}
+        <div className="lg:col-span-4 border-l-4 border-primary pl-10 hidden lg:flex flex-col gap-8">
+          <div>
+            <h3 className="uppercase-label border-b-2 border-primary pb-2 mb-8 text-lg font-black tracking-widest">Market Watch</h3>
+            <div className="flex flex-col gap-10">
+              <div className="flex justify-between items-end border-b border-secondary pb-5">
+                <span className="text-muted-text uppercase-label text-xs font-bold">MERN Experience</span>
+                <div className="text-right">
+                  <span className="headline-serif text-3xl font-black">3+ Years</span>
+                  <p className="text-accent text-[0.7rem] font-black uppercase mt-1">▲ 12% GROWTH</p>
+                </div>
+              </div>
+              <div className="flex justify-between items-end border-b border-secondary pb-5">
+                <span className="text-muted-text uppercase-label text-xs font-bold">Code Quality</span>
+                <div className="text-right">
+                  <span className="headline-serif text-3xl font-black">99.9%</span>
+                  <p className="text-accent text-[0.7rem] font-black uppercase mt-1">ENTERPRISE GRADE</p>
+                </div>
+              </div>
+              <div className="flex justify-between items-end border-b border-secondary pb-5">
+                <span className="text-muted-text uppercase-label text-xs font-bold">Solutions Delivered</span>
+                <div className="text-right">
+                  <span className="headline-serif text-3xl font-black">25+</span>
+                  <p className="text-accent text-[0.7rem] font-black uppercase mt-1">GLOBAL REACH</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Advertisement Mockup */}
+          <div className="mt-auto bg-neutral-100 p-8 border-2 border-primary text-center">
+            <span className="uppercase-label text-[0.6rem] mb-4 block font-bold text-muted-text tracking-[0.2em]">P R O M O T E D</span>
+            <div className="bg-primary py-8 flex items-center justify-center mb-5 group cursor-pointer hover:bg-accent transition-colors duration-500">
+              <span className="text-background headline-serif text-5xl font-black uppercase tracking-tighter">Hire Me</span>
+            </div>
+            <p className="text-xs italic uppercase tracking-widest font-black leading-tight">
+              Accepting New <br /> Opportunities for 2024
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Ticker Tape Style Socials */}
+      <div className="w-full py-4 border-b-2 border-primary flex overflow-hidden whitespace-nowrap bg-background group">
+        <div className="flex animate-marquee group-hover:pause-animation">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="flex items-center gap-10 mx-5">
+              <a href="https://github.com/Innocent-Alive" className="uppercase-label text-xs hover:text-accent font-black">GitHub / Innocent-Alive</a>
+              <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+              <a href="https://www.linkedin.com/in/innocent-alive/" className="uppercase-label text-xs hover:text-accent font-black">LinkedIn / Abhay-Kumar-Das</a>
+              <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+              <a href="https://www.facebook.com/TheInnocentAlive" className="uppercase-label text-xs hover:text-accent font-black">FB / @TheInnocentAlive</a>
+              <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

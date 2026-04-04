@@ -149,143 +149,97 @@ const Projects = () => {
     <section
       id="projects"
       ref={containerRef}
-      className="py-20 bg-background overflow-hidden"
+      className="py-20 bg-background border-b-4 border-primary bg-news-dots"
     >
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Section Header */}
-        <div className="projects-title text-center mb-16">
-          <h2 className="text-4xl font-header text-primary flex items-center justify-center mb-4 gap-4">
-            <MdOutlineWorkspaces className="w-10 h-10 text-primary" />
-            <span className="hidden sm:inline">My</span> Projects
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Recent work showcasing my technical expertise
-          </p>
+      <div className="container mx-auto px-4">
+        {/* Page Header */}
+        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-12 projects-title">
+          <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">Latest Insights</h2>
+          <span className="uppercase-label text-muted-text hidden md:block underline font-black">ARCHIVES / {new Date().getFullYear()} EDITION</span>
         </div>
 
-        {/* Carousel Wrapper */}
-        <div className="carousel-container relative">
-          {/* Slider Viewport */}
-          <div className="overflow-hidden rounded-xl py-4">
-            <div
-              ref={sliderRef}
-              className="flex"
-              style={{
-                width: `${(projects.length / itemsPerPage) * 100}%`,
-              }}
-            >
-              {projects.map((project, index) => (
-                <div
-                  key={index}
-                  className="px-4"
-                  style={{ width: `${100 / projects.length}%` }}
-                >
-                  <div className="group relative bg-white border-2 border-primary/5 rounded-xl overflow-hidden shadow-lg transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl h-full flex flex-col">
-                    {/* Image */}
-                    <div className="relative aspect-video overflow-hidden border-b-2 border-primary/5">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105 saturate-0 group-hover:saturate-100"
-                      />
-                      <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/0 transition-colors duration-300" />
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-6 flex-1 flex flex-col">
-                      <h3 className="text-2xl text-primary mb-3 font-header">
-                        {project.title}
-                      </h3>
-                      <p className="text-gray-600 mb-6 line-clamp-3">
-                        {project.description}
-                      </p>
-
-                      <div className="mt-auto">
-                        <div className="flex flex-wrap gap-2 mb-6">
-                          {project.tech.map((tech, i) => (
-                            <span
-                              key={i}
-                              className="px-3 py-1 text-sm font-medium border border-primary/20 text-primary rounded-full"
-                            >
-                              {tech}
-                            </span>
-                          ))}
-                        </div>
-
-                        <div className="flex gap-4">
-                          <a
-                            href={project.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 inline-flex justify-center items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary transition-colors duration-300 font-medium"
-                          >
-                            <FiExternalLink /> Live Demo
-                          </a>
-                          {project.github && (
-                            <a
-                              href={project.github}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex justify-center items-center gap-2 px-4 py-2 border-2 border-primary text-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-300 font-medium"
-                            >
-                              <FiGithub />
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Navigation Controls */}
-          {projects.length > itemsPerPage && (
-            <div className="flex justify-center items-center gap-6 mt-10">
-              <button
-                onClick={prevSlide}
-                disabled={isPrevDisabled}
-                className={`p-3 rounded-full border-2 transition-all duration-300 ${
-                  isPrevDisabled
-                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                    : "border-primary text-primary hover:bg-primary hover:text-white"
-                }`}
-                aria-label="Previous Project"
-              >
-                <FiChevronLeft className="w-6 h-6" />
-              </button>
-              
-              {/* Dots */}
-              <div className="flex gap-2">
-                {[...Array(projects.length - itemsPerPage + 1)].map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentIndex(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 ${
-                      idx === currentIndex
-                        ? "w-8 bg-primary"
-                        : "w-2 bg-primary/20 hover:bg-primary/40"
-                    }`}
-                    aria-label={`Go to slide ${idx + 1}`}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-20">
+          {projects.map((project, index) => (
+            <div key={index} className="group flex flex-col h-full border-b border-primary/10 pb-10 last:border-b-0 md:last:border-b">
+              {/* Project Image */}
+              <div className="border-4 border-primary p-2 mb-6 bg-white overflow-hidden shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] group-hover:shadow-[10px_10px_0px_0px_rgba(204,0,0,1)] transition-all duration-300">
+                <div className="overflow-hidden">
+                  <img
+                    src={project.image}
+                    alt={project.title}
+                    className="w-full aspect-video object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
                   />
+                </div>
+              </div>
+              
+              {/* Metadata */}
+              <div className="flex justify-between mono-data text-[0.65rem] font-black uppercase mb-4 text-muted-text tracking-widest">
+                <span className="border-b border-accent">BY ABHAY KUMAR DAS</span>
+                <span className="bg-primary text-background px-2">2024-01-15</span>
+              </div>
+              
+              {/* Title */}
+              <h3 className="headline-serif text-2xl md:text-3xl font-black mb-4 uppercase group-hover:text-accent transition-colors leading-[0.9] text-primary">
+                {project.title}
+              </h3>
+              
+              {/* Description */}
+              <p className="text-primary font-bold leading-tight mb-8 text-justify line-clamp-4 text-sm opacity-90 italic border-l-2 border-primary pl-4">
+                {project.description}
+              </p>
+
+              {/* Technologies */}
+              <div className="flex flex-wrap gap-2 mb-8 mt-auto">
+                {project.tech.map((t, i) => (
+                  <span key={i} className="uppercase-label text-[0.55rem] font-black border-2 border-primary px-3 py-1 bg-neutral-100 group-hover:bg-accent group-hover:text-background group-hover:border-accent transition-colors duration-300">
+                    {t}
+                  </span>
                 ))}
               </div>
 
-              <button
-                onClick={nextSlide}
-                disabled={isNextDisabled}
-                className={`p-3 rounded-full border-2 transition-all duration-300 ${
-                  isNextDisabled
-                    ? "border-gray-200 text-gray-300 cursor-not-allowed"
-                    : "border-primary text-primary hover:bg-primary hover:text-white"
-                }`}
-                aria-label="Next Project"
-              >
-                <FiChevronRight className="w-6 h-6" />
-              </button>
+              {/* Links */}
+              <div className="flex items-center gap-6 border-t-2 border-primary pt-6">
+                <a 
+                  href={project.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="uppercase-label text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors"
+                >
+                  <FiExternalLink className="w-4 h-4" /> 
+                  <span>Visit Site</span>
+                </a>
+                {project.github && (
+                  <a 
+                    href={project.github} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="uppercase-label text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors border-l-2 border-primary pl-6"
+                  >
+                    <FiGithub className="w-4 h-4" />
+                    <span>Github</span>
+                  </a>
+                )}
+              </div>
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+
+      {/* Breaking News Ticker (Optional but cool) */}
+      <div className="mt-24 border-y-4 border-primary bg-primary py-3 overflow-hidden whitespace-nowrap">
+        <div className="flex animate-marquee">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="flex items-center gap-20 mx-10">
+              <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
+                NEW PROJECT LAUNCHED: ECOSTORE WEB APP - FULL STACK PERFORMANCE AT SCALE
+              </span>
+              <span className="text-accent text-xl">★</span>
+              <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
+                SIZZLE INDIA: FRONTEND MASTERPIECE - GSAP ANIMATION INTEGRITY VERIFIED
+              </span>
+              <span className="text-accent text-xl">★</span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,26 +1,56 @@
 @import "tailwindcss";
-@font-face {
-  font-family: 'Header';
-  src: url('./assets/Header.ttf');
-}
-@font-face {
-  font-family: 'Body';
-  src: url('./assets/Body.ttf');
-}
-@font-face {
-  font-family: 'Super';
-  src: url('./assets/Urbanist-Italic.ttf');
+@theme {
+  --color-primary: #111111; /* Ink Black */
+  --color-accent: #CC0000; /* Editorial Red */
+  --color-background: #F9F9F7; /* Newsprint Off-White */
+  --color-white: #FFFFFF;
+  --color-neutral-100: #F5F5F5;
+  --color-neutral-200: #E5E5E5;
+  --color-secondary: #E5E5E0; /* Divider Grey */
+  
+  --color-text: #111111;
+  --color-muted-text: #737373;
+  
+  --font-header: 'Playfair Display', serif;
+  --font-body: 'Lora', serif;
+  --font-ui: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
-@theme {
-  --color-primary: #1b2021;
-  --color-secondary: #30343f;
-  --color-accent: #30343f;
-  --color-background: #e6e8e6;
-  --color-text: #0a100d;
-  --font-header: 'Header', sans-serif;
-  --font-body: 'Body', sans-serif;
-  --font-italic: 'Super', sans-serif;
+:root.sepia-mode {
+  --color-background: #f4ecd8;
+  --color-white: #f4ecd8;
+  --color-neutral-100: #ede3cb;
+  --color-neutral-200: #dacfb5;
+  --color-secondary: #e2d7c0;
+}
+
+:root.sepia-mode img {
+  filter: sepia(0.6) grayscale(0.2) contrast(1.1) brightness(1.05) !important;
+}
+
+:root.sepia-mode .bg-news-dots {
+  background-image: radial-gradient(rgba(17, 17, 17, 0.08) 0.6px, transparent 0.6px) !important;
+}
+
+:root.sepia-mode input,
+:root.sepia-mode textarea,
+:root.sepia-mode select {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  color: var(--color-primary) !important;
+}
+
+:root.sepia-mode input::placeholder,
+:root.sepia-mode textarea::placeholder {
+  color: rgba(17, 17, 17, 0.4) !important;
+}
+
+img, .bg-news-dots {
+  transition: filter 0.7s ease, background-image 0.7s ease;
+}
+
+.bg-white, .bg-neutral-100, .bg-neutral-50, .bg-neutral-200, .bg-background {
+  transition: background-color 0.7s ease;
 }
 
 ::-webkit-scrollbar {
@@ -33,7 +63,7 @@
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-primary);
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 ::selection{
@@ -45,12 +75,13 @@ html {
   scroll-behavior: smooth;
   font-family: var(--font-body);
   color: var(--color-text);
+  background-color: var(--color-background);
   line-height: 1.6;
 }
 
 body {
   font-family: var(--font-body);
-  font-weight: 500;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -95,3 +126,57 @@ select:autofill:focus {
   background-color: white !important;
   color: #1a1a1a !important;
 }
+
+/* Add Newspaper Utility Classes */
+.newspaper-border {
+  border: 1px solid var(--color-primary);
+}
+
+.newspaper-border-t {
+  border-top: 1px solid var(--color-primary);
+}
+
+.newspaper-border-b {
+  border-bottom: 1px solid var(--color-primary);
+}
+
+.newspaper-divider {
+  border: 0;
+  border-top: 1px solid var(--color-primary);
+}
+
+.uppercase-label {
+  font-family: var(--font-ui);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+}
+
+.headline-serif {
+  font-family: var(--font-header);
+  line-height: 1.1;
+}
+
+.mono-data {
+  font-family: var(--font-mono);
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.pause-animation {
+  animation-play-state: paused;
+}
+
+.bg-news-dots {
+  background-image: radial-gradient(rgba(17, 17, 17, 0.05) 0.6px, transparent 0.6px);
+  background-size: 6px 6px;
+}
+
