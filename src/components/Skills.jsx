@@ -6,6 +6,7 @@ import {
   FiLayout,
   FiServer,
 } from "react-icons/fi";
+import { IoIosCloudOutline } from "react-icons/io";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -65,7 +66,7 @@ const Skills = () => {
     {
       id: 6,
       title: "Cloud & APIs",
-      icon: FiCode,
+      icon: IoIosCloudOutline,
       skills: ["Docker", "AWS", "RESTful APIs"],
     },
   ];
