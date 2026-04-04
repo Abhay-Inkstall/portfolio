@@ -12,31 +12,34 @@ const Footer = ({ isSepia, setIsSepia }) => {
     "polygon(0% 20px, 1.3% 7px, 3.8% 19px, 6.1% 6px, 9.5% 18px, 11.2% 5px, 14.8% 19px, 16.5% 8px, 19.2% 17px, 21.8% 4px, 24.5% 18px, 28% 6px, 30.2% 19px, 34.5% 5px, 36.8% 18px, 40.2% 7px, 43.5% 19px, 45.8% 4px, 49.2% 18px, 51.5% 7px, 54.8% 19px, 58.2% 5px, 61.5% 18px, 64.2% 8px, 67.8% 19px, 70.5% 6px, 73.2% 18px, 77.5% 5px, 80.8% 19px, 83.2% 7px, 86.5% 18px, 89.2% 4px, 92.5% 19px, 95.8% 6px, 98.2% 18px, 100% 20px, 100% 100%, 0% 100%)";
 
   return (
-    <footer className="bg-background py-20 border-t-8 border-primary relative overflow-hidden transition-colors duration-700">
-      <div className="container mx-auto px-4">
-        {/* Pre-Footer CTA Section - Modern Style */}
-        <div className="bg-primary text-background p-12 md:p-20 mb-20 flex flex-col items-center text-center">
-          <h2 className="headline-serif text-4xl md:text-7xl font-black mb-8 leading-tight max-w-4xl">
+    <footer className="bg-background pt-0 pb-20 relative overflow-hidden transition-colors duration-700">
+      {/* Pre-Footer CTA Section - Full Width Editorial Style */}
+      <div className="bg-primary text-background py-20 md:py-32 mb-20 border-y-8 border-primary">
+        <div className="container mx-auto px-4 flex flex-col items-center text-center">
+          <h2 className="headline-serif text-4xl md:text-8xl font-black mb-10 leading-none max-w-5xl tracking-tighter">
             Ready to transform your workflow?
           </h2>
-          <p className="text-sm md:text-lg mb-12 opacity-80 max-w-2xl font-medium">
+          <p className="text-sm md:text-xl mb-16 opacity-80 max-w-3xl font-medium leading-relaxed italic">
             Join the ranks of innovative brands already leveraging advanced web solutions to drive engagement and achieve unparalleled success in the digital editorial space.
           </p>
-          <div className="flex flex-col sm:flex-row gap-6">
+          <div className="flex flex-col sm:flex-row gap-8 w-full sm:w-auto">
             <a 
               href="#contact" 
-              className="bg-background text-primary px-10 py-5 uppercase-label text-sm font-black hover:bg-neutral-200 transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(204,0,0,1)]"
+              className="bg-background text-primary px-12 py-6 uppercase-label text-sm font-black hover:bg-neutral-200 transition-all duration-300 shadow-[8px_8px_0px_0px_rgba(204,0,0,1)] text-center"
             >
               Start Collaboration
             </a>
             <a 
               href="#contact" 
-              className="border-2 border-background text-background px-10 py-5 uppercase-label text-sm font-black hover:bg-background hover:text-primary transition-all duration-300"
+              className="border-4 border-background text-background px-12 py-6 uppercase-label text-sm font-black hover:bg-background hover:text-primary transition-all duration-300 text-center"
             >
               Schedule a Call
             </a>
           </div>
         </div>
+      </div>
+
+      <div className="container mx-auto px-4">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
           {/* Column 1: Branding & Edition Info */}

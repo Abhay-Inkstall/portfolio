@@ -13,6 +13,7 @@ import {
   FaMapMarkerAlt,
   FaCheck,
 } from "react-icons/fa";
+import { PiStarFour } from "react-icons/pi";
 import { useState, useRef, useLayoutEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -167,7 +168,7 @@ const Contact = () => {
     <section
       id="contact"
       ref={containerRef}
-      className="py-20 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
+      className="py-20 bg-background border-primary relative overflow-hidden bg-news-dots"
     >
       <div className="container mx-auto px-4 relative z-10">
         {/* Page Header */}
@@ -310,6 +311,13 @@ const Contact = () => {
       {/* Background Page Number Decor */}
       <div className="absolute bottom-10 left-10 opacity-5 text-[8rem] font-black uppercase-label select-none pointer-events-none">
         0B2
+      </div>
+
+      {/* Editorial Separator (3 Stars) */}
+      <div className="w-full flex justify-center items-center gap-16 pt-20 pb-10 opacity-30 select-none pointer-events-none overflow-hidden">
+        {[1, 2, 3].map((i) => (
+          <PiStarFour key={i} className="w-8 h-8 text-primary" />
+        ))}
       </div>
     </section>
   );

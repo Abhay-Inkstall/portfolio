@@ -45,8 +45,9 @@ const Hero = () => {
   return (
     <section
       ref={containerRef}
-      className="relative pt-20 lg:pt-28 pb-20 px-4 container mx-auto bg-background bg-news-dots"
+      className="relative bg-background bg-news-dots"
     >
+      <div className="container mx-auto px-4 pt-20 lg:pt-28 pb-20">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-b-4 border-primary pb-12 hero-content">
         {/* Left Column - Main Headline */}
         <div className="lg:col-span-8 flex flex-col gap-8">
@@ -130,16 +131,20 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Ticker Tape Style Socials */}
-      <div className="w-full py-4 border-b-2 border-primary flex overflow-hidden whitespace-nowrap bg-background group">
+      </div>
+
+      {/* Ticker Tape Style Socials - Full Width */}
+      <div className="w-full py-4 border-y-2 border-primary flex overflow-hidden whitespace-nowrap bg-background group">
         <div className="flex animate-marquee group-hover:pause-animation">
           {[...Array(10)].map((_, i) => (
-            <div key={i} className="flex items-center gap-10 mx-5">
-              <a href="https://github.com/Innocent-Alive" className="uppercase-label text-xs hover:text-accent font-black">GitHub / Innocent-Alive</a>
+            <div key={i} className="flex items-center gap-10 mx-5 text-primary">
+              <a href="https://github.com/Innocent-Alive" className="uppercase-label text-xs hover:text-accent font-black">GitHub / @Innocent-Alive</a>
               <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
-              <a href="https://www.linkedin.com/in/innocent-alive/" className="uppercase-label text-xs hover:text-accent font-black">LinkedIn / Abhay-Kumar-Das</a>
+              <a href="https://www.linkedin.com/in/innocent-alive/" className="uppercase-label text-xs hover:text-accent font-black">LinkedIn / @Abhay-Kumar-Das</a>
               <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
-              <a href="https://www.facebook.com/TheInnocentAlive" className="uppercase-label text-xs hover:text-accent font-black">FB / @TheInnocentAlive</a>
+              <a href="https://www.instagram.com/innocent_alive/" className="uppercase-label text-xs hover:text-accent font-black">Instagram / @Innocent_Alive</a>
+              <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
+              <a href="https://www.facebook.com/TheInnocentAlive" className="uppercase-label text-xs hover:text-accent font-black">Facebook / @TheInnocentAlive</a>
               <span className="w-1.5 h-1.5 bg-primary rounded-full"></span>
             </div>
           ))}

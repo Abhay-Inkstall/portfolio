@@ -85,16 +85,16 @@ const About = () => {
     <section
       id="about"
       ref={containerRef}
-      className="py-20 bg-background border-b-4 border-primary bg-news-dots"
+      className="pt-20 bg-background border-b-4 border-primary bg-news-dots"
     >
       <div className="container mx-auto px-4">
         {/* Page Header */}
-        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-12 about-title">
+        <div className="flex justify-between items-end border-b-2 border-primary pb-4 about-title">
           <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter">Inside the Story</h2>
           <span className="uppercase-label text-muted-text hidden md:block">Feature Article / Abhay Kumar Das</span>
         </div>
 
-        <div className="about-intro grid grid-cols-1 lg:grid-cols-12 gap-0 border-y-2 border-primary bg-white/30">
+        <div className="about-intro grid grid-cols-1 lg:grid-cols-12 gap-0 border-b-2 border-primary bg-white/30">
           {/* Editorial Image - Fig Style */}
           <div className="lg:col-span-5 relative group about-image p-8 lg:p-12 border-b-2 lg:border-b-0 lg:border-r-2 border-primary flex flex-col items-center justify-center">
             <div className="border border-primary p-1 bg-white relative w-full max-w-sm aspect-square shadow-[8px_8px_0px_0px_rgba(17,17,17,0.05)]">
@@ -142,7 +142,7 @@ const About = () => {
                   download="Abhay_Kumar_Das_Resume.pdf"
                   className="w-full md:w-auto bg-primary text-background px-8 py-4 uppercase-label text-center hover:bg-accent hover:border-accent hover:text-background transition-all duration-300 font-black text-[0.7rem] shadow-[4px_4px_0px_0px_rgba(17,17,17,1)]"
                 >
-                  Download Dossier (PDF)
+                  Download Resume (PDF)
                 </a>
               </div>
             </div>
@@ -150,7 +150,7 @@ const About = () => {
         </div>
 
         {/* Services Grid - Refined Editorial Style */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-b border-primary">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {/* Service 1 - Web */}
           <div className="p-8 lg:p-12 border-b md:border-b-0 md:border-r border-primary hover:bg-white/40 transition-colors duration-500 flex flex-col items-start">
             <div className="w-12 h-12 bg-white border border-primary flex items-center justify-center mb-10 shadow-[4px_4px_0px_0px_rgba(17,17,17,0.05)]">

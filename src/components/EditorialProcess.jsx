@@ -56,8 +56,8 @@ const EditorialProcess = () => {
       </div>
 
       {/* 2. Value Proposition (Light Section) */}
-      <div className="bg-background py-20 px-4 relative bg-news-dots border-b-8 border-primary">
-        <div className="container mx-auto border-4 border-primary p-2">
+      <div className="bg-background relative bg-news-dots border-b-4 border-primary">
+        <div className="container mx-auto p-2">
           <div className="border border-primary/20 flex flex-col lg:flex-row">
             {/* Illustration Column */}
             <div className="lg:w-1/2 p-12 lg:p-20 flex flex-col items-center justify-center bg-primary/5 border-b lg:border-b-0 lg:border-r border-primary/20">
@@ -114,7 +114,7 @@ const EditorialProcess = () => {
       </div>
       
       {/* 3. Testimonials (Dual Column) */}
-      <div className="bg-background border-b-8 border-primary grid grid-cols-1 lg:grid-cols-2 text-primary">
+      <div className="bg-background border-b-4 border-primary grid grid-cols-1 lg:grid-cols-2 text-primary">
          <div className="p-12 lg:p-24 border-b lg:border-b-0 lg:border-r-4 border-primary flex flex-col justify-center">
             <svg className="w-12 h-12 text-accent mb-8 opacity-20 fill-current" viewBox="0 0 24 24">
               <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21V18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM3.01704 21L3.01704 18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21ZM3.01704 21V18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21Z" transform="translate(0, -8)" />
