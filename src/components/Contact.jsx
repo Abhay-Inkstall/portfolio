@@ -266,7 +266,7 @@ const Contact = () => {
                   required
                   value={formData.subject}
                   onChange={handleChange}
-                  placeholder="RE: PROJECT INQUIRY // 2024"
+                  placeholder="RE: PROJECT INQUIRY // 2026"
                   className="w-full border-b-4 border-primary p-4 mono-data text-sm font-black focus:outline-none focus:border-accent transition-colors bg-neutral-50 placeholder:opacity-30"
                 />
               </div>

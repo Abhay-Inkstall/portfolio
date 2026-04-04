@@ -125,7 +125,7 @@ const Hero = () => {
               <span className="text-background headline-serif text-5xl font-black uppercase tracking-tighter">Hire Me</span>
             </div>
             <p className="text-xs italic uppercase tracking-widest font-black leading-tight">
-              Accepting New <br /> Opportunities for 2024
+              Accepting New <br /> Opportunities for 2026
             </p>
           </div>
         </div>
