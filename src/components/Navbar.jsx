@@ -13,26 +13,7 @@ import {
 import logo from "../assets/logoBlack.png";
 
 const Navbar = () => {
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const controlNavbar = () => {
-      if (typeof window !== "undefined") {
-        if (window.scrollY > lastScrollY && window.scrollY > 50) {
-          setIsVisible(false);
-          if (isMenuOpen) setIsMenuOpen(false); // Close menu on scroll down
-        } else {
-          setIsVisible(true);
-        }
-        setLastScrollY(window.scrollY);
-      }
-    };
-
-    window.addEventListener("scroll", controlNavbar);
-    return () => window.removeEventListener("scroll", controlNavbar);
-  }, [lastScrollY, isMenuOpen]);
 
   const navLinks = [
     { id: "01", text: "Home", href: "#", icon: FiHome },
@@ -53,17 +34,17 @@ const Navbar = () => {
         onClick={() => setIsMenuOpen(false)}
       />
 
-      {/* Slide-out Sidebar */}
+      {/* Slide-down Mobile Menu */}
       <div 
-        className={`fixed top-0 left-0 h-full w-[85%] max-w-sm bg-background z-[70] shadow-2xl transition-transform duration-500 ease-in-out lg:hidden border-r-8 border-primary bg-news-dots ${
-          isMenuOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-xl z-[70] transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] lg:hidden border-b-8 border-primary bg-news-dots ${
+          isMenuOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="p-8 h-full flex flex-col">
           {/* Sidebar Header */}
-          <div className="flex justify-between items-start mb-16 border-b-2 border-primary pb-6">
+          <div className="flex justify-between items-start mb-12 border-b-2 border-primary pb-6">
             <div className="flex flex-col gap-2">
-              <img src={logo} alt="LOGO" className="h-10 w-auto grayscale contrast-125 translate-x-[-4px]" />
+              <img src={logo} alt="LOGO" className="h-10 w-auto object-contain grayscale contrast-125 translate-x-[-4px]" />
               <span className="uppercase-label text-[0.6rem] font-black tracking-[0.2em] opacity-50">Edition 2024.01</span>
             </div>
             <button 
@@ -86,53 +67,29 @@ const Navbar = () => {
                 <span className="mono-data text-xs font-black text-accent opacity-40 group-hover:opacity-100 transition-opacity">
                   [{link.id}]
                 </span>
-                <span className="headline-serif text-3xl font-black uppercase tracking-tighter text-primary group-hover:text-accent group-hover:translate-x-2 transition-all duration-300">
+                <span className="headline-serif text-4xl font-black uppercase tracking-tighter text-primary group-hover:text-accent group-hover:translate-x-2 transition-all duration-300">
                   {link.text}
                 </span>
               </a>
             ))}
           </nav>
-
-          {/* Sidebar Footer */}
-          <div className="mt-auto border-t-2 border-primary pt-8 pb-4">
-            <a 
-              href="#contact" 
-              onClick={() => setIsMenuOpen(false)}
-              className="flex items-center justify-between bg-primary text-background p-4 uppercase-label text-xs font-black hover:bg-accent transition-all group"
-            >
-              <span>Secure Subscription</span>
-              <FiArrowRight className="group-hover:translate-x-2 transition-transform" />
-            </a>
-          </div>
         </div>
       </div>
 
       {/* Main Navbar */}
-      <nav
-        className={`fixed w-full bg-background z-50 transition-transform duration-300 ${
-          isVisible ? "translate-y-0" : "-translate-y-full lg:translate-y-0"
-        } border-b-4 border-primary`}
-      >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between py-2 lg:py-0">
-          {/* Hamburger & Logo Left */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            {/* Hamburger Trigger (Mobile only) */}
-            <button 
-              onClick={() => setIsMenuOpen(true)}
-              className="lg:hidden p-2 border-2 border-primary hover:bg-primary hover:text-background transition-all active:scale-95"
-            >
-              <FiMenu className="w-6 h-6" />
-            </button>
-
-            <a href="#" className="flex items-center gap-3 group">
-              <img src={logo} alt="LOGO" className="h-8 lg:h-10 w-auto grayscale contrast-125 group-hover:grayscale-0 transition-all ml-1 lg:ml-0" />
-              <span className="headline-serif text-lg lg:text-2xl font-black uppercase tracking-tighter leading-none hidden sm:block">
+      <nav className="fixed w-full bg-background z-50 border-b-4 border-primary">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          {/* LEFT: Logo & Name (Desktop) / Logo only (Mobile) */}
+          <div className="flex items-center gap-4">
+            <a href="#" className="flex items-center group">
+              <img src={logo} alt="LOGO" className="h-12 lg:h-10 w-auto object-contain grayscale contrast-125 group-hover:grayscale-0 transition-all ml-1 lg:ml-0" />
+              <span className="headline-serif text-2xl font-black uppercase tracking-tighter leading-none hidden lg:block ml-3">
                 ABHAY KUMAR DAS
               </span>
             </a>
           </div>
 
-          {/* Edition Info (Desktop only) */}
+          {/* MIDDLE: Edition Info (Desktop Only) / Name Badge (Mobile Only) */}
           <div className="hidden xl:flex border border-primary px-4 py-1 items-center gap-4 mono-data text-[0.6rem] font-black uppercase bg-background shadow-[3px_3px_0px_0px_rgba(17,17,17,1)]">
             <div className="flex items-center gap-3 border-r border-primary/20 pr-4">
               <span className="text-accent">VOL. 024</span>
@@ -147,7 +104,13 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Desktop Links & CTA */}
+          <div className="lg:hidden flex-grow flex justify-center sm:justify-end px-4">
+            <span className="bg-primary text-background px-4 py-2 uppercase-label text-[0.65rem] font-black shadow-[4px_4px_0px_0px_rgba(17,17,17,0.1)] whitespace-nowrap">
+              ABHAY KUMAR DAS
+            </span>
+          </div>
+
+          {/* RIGHT: Desktop Links & Hire Me / Mobile Hamburger */}
           <div className="flex items-center gap-4 lg:gap-8">
             <div className="hidden lg:flex gap-6 uppercase-label text-[0.65rem] font-black">
               {navLinks.slice(1, -1).map((link) => (
@@ -164,10 +127,17 @@ const Navbar = () => {
             
             <a 
               href="#contact" 
-              className="bg-primary text-background px-6 py-2 uppercase-label text-[0.65rem] font-black hover:bg-accent hover:text-background transition-all duration-300 active:scale-95 shadow-[4px_4px_0px_0px_rgba(17,17,17,0.1)]"
+              className="hidden lg:block bg-primary text-background px-6 py-2 uppercase-label text-[0.65rem] font-black hover:bg-accent hover:text-background transition-all duration-300 active:scale-95 shadow-[4px_4px_0px_0px_rgba(17,17,17,0.1)]"
             >
               Hire Me
             </a>
+
+            <button 
+              onClick={() => setIsMenuOpen(true)}
+              className="lg:hidden p-2 border-2 border-primary hover:bg-primary hover:text-background transition-all active:scale-95"
+            >
+              <FiMenu className="w-6 h-6" />
+            </button>
           </div>
         </div>
       </nav>

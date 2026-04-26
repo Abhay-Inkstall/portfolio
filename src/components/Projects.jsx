@@ -6,36 +6,18 @@ import project2 from "../assets/microsoft.png";
 import project3 from "../assets/calculator.png";
 import project4 from "../assets/sizzleindia.png";
 import project5 from "../assets/rollrush.png";
+import project6 from "../assets/NumzyProject.png";
+import project7 from "../assets/ExpenseTracker.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Projects = () => {
-  const containerRef = useRef(null);
-  const sliderRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const sectionRef = useRef(null);
+  const triggerRef = useRef(null);
 
   const projects = [
-    {
-      title: "EcoStore Web App",
-      description:
-        "A full-stack e-commerce platform with user authentication, product management, and payment integration.",
-      tech: ["React", "Node.js", "MongoDB", "Tailwind"],
-      image: project1,
-      link: "https://ecostoreonline.onrender.com/",
-      github: "https://github.com/Innocent-Alive/EcoStore",
-    },
-    {
-      title: "Sizzle Website",
-      description:
-        "A food website built with React, Tailwind, and GSAP, featuring a responsive design.",
-      tech: ["React", "Tailwind", "GSAP"],
-      image: project4,
-      link: "https://sizzleindia.vercel.app/",
-      github: "https://github.com/Innocent-Alive/Sizzle",
-    },
     {
       title: "Microsoft Clone",
       description:
@@ -46,13 +28,40 @@ const Projects = () => {
       github: "https://github.com/Innocent-Alive/Microsoft-Homepage",
     },
     {
-      title: "Android Calculator",
+      title: "EcoStore Web App",
       description:
-        "A calculator application built with Java and XML in Android Studio with basic operations functionality.",
-      tech: ["Java", "Android", "XML"],
-      image: project3,
-      link: "https://github.com/Innocent-Alive/Android_Calculator",
-      github: "https://github.com/Innocent-Alive/Android_Calculator",
+        "A full-stack e-commerce platform with user authentication, product management, and payment integration.",
+      tech: ["React", "Node.js", "MongoDB", "Tailwind"],
+      image: project1,
+      link: "https://ecostoreonline.onrender.com/",
+      github: "https://github.com/Innocent-Alive/EcoStore",
+    },
+    {
+      title: "Numzy",
+      description:
+        "A maths-based game where players solve equations to score points. Features a Python backend for logic and PostgreSQL (NeonDB) for progress tracking.",
+      tech: ["React Native", "Python", "PostgreSQL", "Android"],
+      image: project6,
+      link: "#",
+      github: "#",
+    },
+    {
+      title: "No Exceed",
+      description:
+        "A comprehensive expense tracker and to-do list application for better financial and task management.",
+      tech: ["TypeScript", "React Native", "Node.js", "MongoDB"],
+      image: project7,
+      link: "#",
+      github: "#",
+    },
+    {
+      title: "Sizzle Website",
+      description:
+        "A food website built with React, Tailwind, and GSAP, featuring a responsive design.",
+      tech: ["React", "Tailwind", "GSAP"],
+      image: project4,
+      link: "https://sizzleindia.vercel.app/",
+      github: "https://github.com/Innocent-Alive/Sizzle",
     },
     {
       title: "Roll Rush Game",
@@ -65,57 +74,23 @@ const Projects = () => {
     },
   ];
 
-  // Responsive itemsPerPage
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setItemsPerPage(3);
-      } else if (window.innerWidth >= 768) {
-        setItemsPerPage(2);
-      } else {
-        setItemsPerPage(1);
-      }
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Update currentIndex if out of bounds after resize
-  useEffect(() => {
-    const maxIndex = Math.max(0, projects.length - itemsPerPage);
-    if (currentIndex > maxIndex) {
-      setCurrentIndex(maxIndex);
-    }
-  }, [itemsPerPage, projects.length, currentIndex]);
-
-  const nextSlide = () => {
-    const maxIndex = projects.length - itemsPerPage;
-    if (currentIndex < maxIndex) {
-      setCurrentIndex((prev) => prev + 1);
-    }
-  };
-
-  const prevSlide = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1);
-    }
-  };
-
-  // GSAP Animation for Slider
-  useEffect(() => {
-    if (sliderRef.current) {
-      gsap.to(sliderRef.current, {
-        xPercent: -(currentIndex * (100 / projects.length)),
-        duration: 0.6,
-        ease: "power3.out",
-      });
-    }
-  }, [currentIndex, itemsPerPage, projects.length]);
-
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      const pinDistance = sectionRef.current.offsetWidth * (projects.length / 2);
+      
+      gsap.to(sectionRef.current, {
+        x: () => -(sectionRef.current.scrollWidth - window.innerWidth),
+        ease: "none",
+        scrollTrigger: {
+          trigger: triggerRef.current,
+          pin: true,
+          scrub: 1,
+          start: "top top",
+          end: () => `+=${sectionRef.current.scrollWidth - window.innerWidth}`,
+          invalidateOnRefresh: true,
+        },
+      });
+
       gsap.from(".projects-title", {
         scrollTrigger: {
           trigger: ".projects-title",
@@ -126,41 +101,31 @@ const Projects = () => {
         duration: 1,
         ease: "power3.out",
       });
-
-      gsap.from(".carousel-container", {
-        scrollTrigger: {
-          trigger: ".carousel-container",
-          start: "top 80%",
-        },
-        y: 50,
-        opacity: 0,
-        duration: 1,
-        ease: "power3.out",
-      });
-    }, containerRef);
+    }, triggerRef);
 
     return () => ctx.revert();
-  }, []);
-
-  const isPrevDisabled = currentIndex === 0;
-  const isNextDisabled = currentIndex >= projects.length - itemsPerPage;
+  }, [projects.length]);
 
   return (
-    <section
-      id="projects"
-      ref={containerRef}
-      className="py-20 bg-background border-b-4 border-primary bg-news-dots"
-    >
-      <div className="container mx-auto px-4">
-        {/* Page Header */}
-        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-12 projects-title">
-          <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">Latest Insights</h2>
-          <span className="uppercase-label text-muted-text hidden md:block underline font-black">ARCHIVES / {new Date().getFullYear()} EDITION</span>
+    <div ref={triggerRef} className="overflow-hidden bg-background">
+      <section
+        id="projects"
+        className="py-20 min-h-screen border-b-4 border-primary bg-news-dots flex flex-col justify-center relative"
+      >
+        <div className="container mx-auto px-4 mb-12">
+          {/* Page Header */}
+          <div className="flex justify-between items-end border-b-2 border-primary pb-4 projects-title">
+            <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">Latest Insights</h2>
+            <span className="uppercase-label text-muted-text hidden md:block underline font-black">ARCHIVES / {new Date().getFullYear()} EDITION</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-20">
+        <div ref={sectionRef} className="flex gap-10 px-4 md:px-[5vw]">
           {projects.map((project, index) => (
-            <div key={index} className="group flex flex-col h-full border-b border-primary/10 pb-10 last:border-b-0 md:last:border-b">
+            <div 
+              key={index} 
+              className="group flex flex-col shrink-0 w-[85vw] md:w-[450px] border-b border-primary/10 pb-10"
+            >
               {/* Project Image */}
               <div className="border-4 border-primary p-2 mb-6 bg-white overflow-hidden shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] group-hover:shadow-[10px_10px_0px_0px_rgba(204,0,0,1)] transition-all duration-300">
                 <div className="overflow-hidden">
@@ -184,12 +149,12 @@ const Projects = () => {
               </h3>
               
               {/* Description */}
-              <p className="text-primary font-bold leading-tight mb-8 text-justify line-clamp-4 text-sm opacity-90 italic border-l-2 border-primary pl-4">
+              <p className="text-primary font-bold leading-tight mb-6 text-justify line-clamp-4 text-sm opacity-90 italic border-l-2 border-primary pl-4">
                 {project.description}
               </p>
 
               {/* Technologies */}
-              <div className="flex flex-wrap gap-2 mb-8 mt-auto">
+              <div className="flex flex-wrap gap-2 mb-6 mt-auto">
                 {project.tech.map((t, i) => (
                   <span key={i} className="uppercase-label text-[0.55rem] font-black border-2 border-primary px-3 py-1 bg-neutral-100 group-hover:bg-accent group-hover:text-background group-hover:border-accent transition-colors duration-300">
                     {t}
@@ -223,26 +188,26 @@ const Projects = () => {
             </div>
           ))}
         </div>
-      </div>
 
-      {/* Breaking News Ticker (Optional but cool) */}
-      <div className="mt-24 border-y-4 border-primary bg-primary py-3 overflow-hidden whitespace-nowrap">
-        <div className="flex animate-marquee">
-          {[...Array(5)].map((_, i) => (
-            <div key={i} className="flex items-center gap-20 mx-10">
-              <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
-                NEW PROJECT LAUNCHED: ECOSTORE WEB APP - FULL STACK PERFORMANCE AT SCALE
-              </span>
-              <span className="text-accent text-xl">★</span>
-              <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
-                SIZZLE INDIA: FRONTEND MASTERPIECE - GSAP ANIMATION INTEGRITY VERIFIED
-              </span>
-              <span className="text-accent text-xl">★</span>
-            </div>
-          ))}
+        {/* Breaking News Ticker (Optional but cool) */}
+        <div className="mt-24 border-y-4 border-primary bg-primary py-3 overflow-hidden whitespace-nowrap">
+          <div className="flex animate-marquee">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex items-center gap-20 mx-10">
+                <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
+                  NEW PROJECT LAUNCHED: ECOSTORE WEB APP - FULL STACK PERFORMANCE AT SCALE
+                </span>
+                <span className="text-accent text-xl">★</span>
+                <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
+                  SIZZLE INDIA: FRONTEND MASTERPIECE - GSAP ANIMATION INTEGRITY VERIFIED
+                </span>
+                <span className="text-accent text-xl">★</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 

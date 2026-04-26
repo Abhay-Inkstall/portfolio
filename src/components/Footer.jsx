@@ -84,6 +84,7 @@ const Footer = ({ isSepia, setIsSepia }) => {
               <li><a href="#experience" className="hover:text-accent hover:underline flex items-center gap-2"><span>[02]</span> CAREER_LOG</a></li>
               <li><a href="#projects" className="hover:text-accent hover:underline flex items-center gap-2"><span>[03]</span> INSIGHTS</a></li>
               <li><a href="#skills" className="hover:text-accent hover:underline flex items-center gap-2"><span>[04]</span> TECH_SPECS</a></li>
+              <li><a href="#" className="hover:text-accent hover:underline flex items-center gap-2"><span>[05]</span> BLOGS</a></li>
             </ul>
           </div>
 
