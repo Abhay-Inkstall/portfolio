@@ -168,7 +168,7 @@ select:autofill:focus {
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 65s linear infinite;
 }
 
 .pause-animation {
@@ -179,4 +179,18 @@ select:autofill:focus {
   background-image: radial-gradient(rgba(17, 17, 17, 0.05) 0.6px, transparent 0.6px);
   background-size: 6px 6px;
 }
+
+@keyframes tvScan {
+  0% {
+    top: -25%;
+  }
+  100% {
+    top: 115%;
+  }
+}
+
+.animate-tv-scan {
+  animation: tvScan 3s linear infinite;
+}
+
 

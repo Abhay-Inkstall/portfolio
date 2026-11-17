@@ -3,9 +3,9 @@ import { FiFileText, FiZap, FiLayout, FiCheckCircle, FiShield, FiCpu, FiTrending
 
 const EditorialProcess = () => {
   return (
-    <section className="border-t-8 border-primary overflow-hidden">
+    <section className="overflow-hidden">
       {/* 1. How I Work (Dark Section) */}
-      <div className="bg-primary text-background py-20 px-4 border-b-8 border-background relative">
+      <div className="bg-primary text-background py-14 lg:py-16 px-4 border-b-8 border-background relative">
         <div className="container mx-auto">
           <div className="flex flex-col lg:flex-row gap-16 items-start">
             <div className="lg:w-1/3">

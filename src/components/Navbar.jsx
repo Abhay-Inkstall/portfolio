@@ -77,7 +77,7 @@ const Navbar = () => {
       </div>
 
       {/* Main Navbar */}
-      <nav className="fixed w-full bg-background z-50 border-b-4 border-primary">
+      <nav className="fixed top-0 left-0 w-full bg-background z-50 border-b-4 border-primary">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           {/* LEFT: Logo & Name (Desktop) / Logo only (Mobile) */}
           <div className="flex items-center gap-4">
