@@ -12,13 +12,51 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Authentic 3D Pushpin Component
+const PushPin = ({ angle = 0 }) => (
+  <div 
+    className="push-pin absolute -top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-none drop-shadow-[0_4px_4px_rgba(0,0,0,0.35)]"
+    style={{ transform: `translateX(-50%) rotate(${angle}deg)` }}
+  >
+    <svg width="28" height="34" viewBox="0 0 28 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Needle piercing through card */}
+      <path d="M14 24L14 32" stroke="#111111" strokeWidth="2.2" strokeLinecap="round" />
+      {/* Shadow under metallic base */}
+      <ellipse cx="14" cy="24" rx="4.5" ry="1.5" fill="rgba(0,0,0,0.25)" />
+      {/* Metallic collar ring */}
+      <path d="M10 24L11 20H17L18 24H10Z" fill="url(#metalGrad)" stroke="#78909C" strokeWidth="0.5" />
+      {/* Plastic pin body in editorial red */}
+      <path d="M11 20C11 16.5 9 14.5 9 11.5C9 7 11.2 4.5 14 4.5C16.8 4.5 19 7 19 11.5C19 14.5 17 16.5 17 20H11Z" fill="#CC0000" />
+      {/* 3D dome head */}
+      <ellipse cx="14" cy="5" rx="6.5" ry="3.8" fill="#D32F2F" />
+      {/* Glossy curved highlight on dome */}
+      <ellipse cx="13" cy="4" rx="4" ry="1.8" fill="#FF8A80" opacity="0.85" />
+      <circle cx="11.5" cy="3.5" r="1.2" fill="#FFFFFF" opacity="0.95" />
+      {/* Lateral shine on pin contour */}
+      <path d="M12 6.5C12 9 12.5 14 13 19" stroke="#FFCDD2" strokeWidth="1.2" strokeLinecap="round" opacity="0.6" />
+      <defs>
+        <linearGradient id="metalGrad" x1="10" y1="20" x2="18" y2="24" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#ECEFF1" />
+          <stop offset="0.5" stopColor="#CFD8DC" />
+          <stop offset="1" stopColor="#90A4AE" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+);
+
 const Skills = () => {
   const containerRef = useRef(null);
+  const contentRef = useRef(null);
+  const cardsRef = useRef([]);
+  const pinsRef = useRef([]);
+
   const skillCategories = [
     {
       id: 1,
       title: "Frontend Development",
       icon: FiLayout,
+      angle: -1.5,
       skills: [
         "React.js",
         "React Native",
@@ -35,12 +73,24 @@ const Skills = () => {
       id: 2,
       title: "Backend Development",
       icon: FiServer,
-      skills: ["Node.js", "Express.js", "Java", "Spring Boot", "JavaScript", "TypeScript", "PHP", "Python", "FastAPI",],
+      angle: 1.2,
+      skills: [
+        "Node.js",
+        "Express.js",
+        "Java",
+        "Spring Boot",
+        "JavaScript",
+        "TypeScript",
+        "PHP",
+        "Python",
+        "FastAPI",
+      ],
     },
     {
       id: 3,
       title: "Tools & Technologies",
       icon: FiCode,
+      angle: -0.8,
       skills: [
         "Visual Studio Code",
         "Eclipse",
@@ -55,110 +105,328 @@ const Skills = () => {
       id: 4,
       title: "Version Control",
       icon: FiGitBranch,
+      angle: 1.6,
       skills: ["Git", "GitHub", "GitLab", "Bitbucket"],
     },
     {
       id: 5,
       title: "Databases",
       icon: FiDatabase,
-      skills: ["MySQL", "PostgreSQL", "MongoDB", "Oracle", "SQL Server"],
+      angle: -1.2,
+      skills: ["MySQL", "PostgreSQL", "MongoDB", "Redis", "Oracle", "SQL Server"],
     },
     {
       id: 6,
       title: "Cloud & APIs",
       icon: IoIosCloudOutline,
-      skills: ["Docker", "AWS", "RESTful APIs"],
+      angle: 0.9,
+      skills: ["Docker", "Kubernetes", "Google Cloud", "AWS", "RESTful APIs"],
     },
   ];
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
+      // Header Animation
       gsap.fromTo(
         ".skills-title",
         { y: 30, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
+          duration: 0.8,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: ".skills-title",
-            start: "top 90%",
+            trigger: containerRef.current,
+            start: "top 80%",
             toggleActions: "play none none none",
           },
         }
       );
 
-      gsap.fromTo(
-        ".skill-card",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".skills-grid",
-            start: "top 90%",
-            toggleActions: "play none none none",
-          },
+      const mm = gsap.matchMedia();
+
+      // DESKTOP (lg screens): Pinned scroll with Row 1 & Row 2 Centered Scroll Shift
+      mm.add("(min-width: 1024px)", () => {
+        const cards = cardsRef.current.filter(Boolean);
+        const pins = pinsRef.current.filter(Boolean);
+        const cardAngles = skillCategories.map((c) => c.angle);
+        const isShown = [false, false, false, false, false, false];
+        let isRow2Shifted = false;
+
+        // Initial setup - hide all cards and pins
+        cards.forEach((card) => {
+          gsap.set(card, {
+            scale: 0,
+            opacity: 0,
+            y: -25,
+            rotation: 0,
+            transformOrigin: "50% 0%",
+          });
+        });
+
+        pins.forEach((pin) => {
+          gsap.set(pin, {
+            scale: 0,
+            y: -15,
+            opacity: 0,
+          });
+        });
+
+        if (contentRef.current) {
+          gsap.set(contentRef.current, { y: 0 });
         }
-      );
+
+        ScrollTrigger.create({
+          trigger: containerRef.current,
+          start: "top top",
+          end: "+=2000",
+          pin: true,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            const p = self.progress;
+
+            // Thresholds:
+            // Row 1 (Cards 0, 1, 2)
+            // Shift screen up between 0.42 and 0.48
+            // Row 2 (Cards 3, 4, 5)
+            const thresholds = [0.06, 0.18, 0.30, 0.54, 0.68, 0.82];
+
+            // 1. Pop In / Pop Out each Card
+            thresholds.forEach((th, idx) => {
+              const card = cards[idx];
+              const pin = pins[idx];
+              if (!card) return;
+
+              if (p >= th) {
+                if (!isShown[idx]) {
+                  isShown[idx] = true;
+                  gsap.to(card, {
+                    scale: 1,
+                    opacity: 1,
+                    rotation: cardAngles[idx],
+                    y: 0,
+                    duration: 0.45,
+                    ease: "back.out(2.2)",
+                    overwrite: "auto",
+                  });
+                  if (pin) {
+                    gsap.to(pin, {
+                      scale: 1,
+                      y: 0,
+                      opacity: 1,
+                      duration: 0.32,
+                      ease: "bounce.out",
+                      overwrite: "auto",
+                    });
+                  }
+                }
+              } else {
+                if (isShown[idx]) {
+                  isShown[idx] = false;
+                  gsap.to(card, {
+                    scale: 0,
+                    opacity: 0,
+                    rotation: 0,
+                    y: -25,
+                    duration: 0.25,
+                    ease: "power2.in",
+                    overwrite: "auto",
+                  });
+                  if (pin) {
+                    gsap.to(pin, {
+                      scale: 0,
+                      y: -15,
+                      opacity: 0,
+                      duration: 0.2,
+                      overwrite: "auto",
+                    });
+                  }
+                }
+              }
+            });
+
+            // 2. Scroll the whole content up (Header + Row 1 move up together, Row 2 centers)
+            // This prevents the heading from showing behind the cards!
+            if (contentRef.current && cards[3] && cards[0]) {
+              const shiftDistance = cards[3].offsetTop - cards[0].offsetTop;
+
+              if (p >= 0.44) {
+                if (!isRow2Shifted) {
+                  isRow2Shifted = true;
+                  gsap.to(contentRef.current, {
+                    y: -shiftDistance,
+                    duration: 0.55,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                  });
+                }
+              } else {
+                if (isRow2Shifted) {
+                  isRow2Shifted = false;
+                  gsap.to(contentRef.current, {
+                    y: 0,
+                    duration: 0.5,
+                    ease: "power2.out",
+                    overwrite: "auto",
+                  });
+                }
+              }
+            }
+          },
+        });
+      });
+
+      // TABLET & MOBILE (< 1024px): Cards pop in sequentially as user scrolls down naturally
+      mm.add("(max-width: 1023px)", () => {
+        const cards = cardsRef.current.filter(Boolean);
+        const pins = pinsRef.current.filter(Boolean);
+        const cardAngles = skillCategories.map((c) => c.angle);
+
+        if (contentRef.current) {
+          gsap.set(contentRef.current, { y: 0 });
+        }
+
+        cards.forEach((card, idx) => {
+          const pin = pins[idx];
+          gsap.set(card, {
+            scale: 0.2,
+            opacity: 0,
+            y: -20,
+            rotation: 0,
+            transformOrigin: "50% 0%",
+          });
+          if (pin) {
+            gsap.set(pin, {
+              scale: 0,
+              y: -15,
+              opacity: 0,
+            });
+          }
+
+          ScrollTrigger.create({
+            trigger: card,
+            start: "top 85%",
+            onEnter: () => {
+              gsap.to(card, {
+                scale: 1,
+                opacity: 1,
+                rotation: cardAngles[idx],
+                y: 0,
+                duration: 0.5,
+                ease: "back.out(2.2)",
+              });
+              if (pin) {
+                gsap.to(pin, {
+                  scale: 1,
+                  y: 0,
+                  opacity: 1,
+                  duration: 0.35,
+                  ease: "bounce.out",
+                });
+              }
+            },
+            onLeaveBack: () => {
+              gsap.to(card, {
+                scale: 0.2,
+                opacity: 0,
+                rotation: 0,
+                y: -20,
+                duration: 0.25,
+              });
+              if (pin) {
+                gsap.to(pin, {
+                  scale: 0,
+                  y: -15,
+                  opacity: 0,
+                  duration: 0.2,
+                });
+              }
+            },
+          });
+        });
+      });
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section id="skills" ref={containerRef} className="py-20 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots">
-      <div className="container mx-auto px-4 relative z-10">
-        {/* Section Header */}
-        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-12 skills-title">
-          <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">Technical Specs</h2>
-          <span className="uppercase-label text-muted-text hidden md:block">Stack Inventory / Index {new Date().getFullYear() % 100}.0</span>
+    <section 
+      id="skills" 
+      ref={containerRef} 
+      className="pt-10 pb-14 md:pt-12 md:pb-16 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
+    >
+      <div 
+        ref={contentRef}
+        className="container mx-auto px-4 relative z-10 will-change-transform"
+      >
+        {/* Section Header - Clean headline without redundant text */}
+        <div className="border-b-2 border-primary pb-3 mb-8 skills-title">
+          <h2 className="headline-serif text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary">
+            Technical Specs
+          </h2>
         </div>
 
-        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-12 gap-x-8">
-          {skillCategories.map((category) => (
+        {/* 6 Skill Categories Grid */}
+        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 gap-x-6">
+          {skillCategories.map((category, idx) => (
             <div
               key={category.id}
-              className="skill-card border-4 border-primary bg-white shadow-[10px_10px_0px_0px_rgba(17,17,17,1)] flex flex-col group hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[14px_14px_0px_0px_rgba(17,17,17,1)] transition-all duration-300"
+              ref={(el) => (cardsRef.current[idx] = el)}
+              className="skill-card relative border-4 border-primary bg-white shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] flex flex-col pt-1"
             >
-              <div className="bg-primary text-background p-4 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <category.icon className="w-6 h-6 border-2 border-background p-0.5" />
-                  <h3 className="uppercase-label text-sm font-black tracking-widest">{category.title.toUpperCase()}</h3>
+              {/* Attached Pushpin on Top */}
+              <div ref={(el) => (pinsRef.current[idx] = el)}>
+                <PushPin angle={category.angle * 1.5} />
+              </div>
+
+              {/* Card Header */}
+              <div className="bg-primary text-background p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <category.icon className="w-4 h-4 border-2 border-background p-0.5 text-background" />
+                  <h3 className="uppercase-label text-xs font-black tracking-wider">
+                    {category.title.toUpperCase()}
+                  </h3>
                 </div>
-                <span className="mono-data text-[0.6rem] font-bold opacity-50 underline">REF: {category.id}A</span>
+                <span className="mono-data text-[0.58rem] font-bold opacity-60 underline">
+                  REF: 0{category.id}
+                </span>
               </div>
               
-              <div className="p-6 grid grid-cols-2 gap-3 bg-background/50">
+              {/* Skills Items - Fixed/Solid (No hover jitter/translate) */}
+              <div className="p-3.5 grid grid-cols-2 gap-2 bg-background/40">
                 {category.skills.map((skill, index) => (
                   <div 
                     key={index} 
-                    className="border-2 border-primary p-2 flex items-center gap-3 bg-white hover:bg-accent hover:text-background hover:border-accent transition-all duration-200"
+                    className="border-2 border-primary p-1.5 flex items-center gap-2 bg-white"
                   >
-                    <div className="w-2 h-2 bg-primary group-hover:bg-background scale-75 rotate-45 flex-shrink-0"></div>
-                    <span className="mono-data text-[0.65rem] font-black uppercase overflow-hidden text-ellipsis whitespace-nowrap">{skill}</span>
+                    <div className="w-1.5 h-1.5 bg-primary scale-75 rotate-45 flex-shrink-0"></div>
+                    <span className="mono-data text-[0.62rem] font-black uppercase overflow-hidden text-ellipsis whitespace-nowrap text-primary">
+                      {skill}
+                    </span>
                   </div>
                 ))}
               </div>
               
-              <div className="mt-auto border-t-2 border-primary p-3 bg-neutral-100 flex justify-between items-center px-6">
+              {/* Card Footer */}
+              <div className="mt-auto border-t-2 border-primary p-2 bg-neutral-100 flex justify-between items-center px-3.5">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></span>
-                  <span className="uppercase-label text-[0.55rem] font-black">SYSTEM_OPTIMIZED</span>
+                  <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                  <span className="uppercase-label text-[0.52rem] font-black text-primary">
+                    SYSTEM_OPTIMIZED
+                  </span>
                 </div>
-                <span className="mono-data text-[0.55rem] font-black">COMPATIBILITY: 100%</span>
+                <span className="mono-data text-[0.52rem] font-bold text-muted-text">
+                  SEC // {category.id}
+                </span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute top-10 right-[-5%] text-[10rem] font-black text-primary/5 select-none pointer-events-none uppercase-label rotate-12">
+      {/* Decorative Background Stamp */}
+      <div className="absolute top-12 right-[-2%] text-[9rem] font-black text-primary/5 select-none pointer-events-none uppercase-label rotate-12">
         STACK
       </div>
     </section>

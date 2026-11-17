@@ -76,18 +76,22 @@ const Projects = () => {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      const pinDistance = sectionRef.current.offsetWidth * (projects.length / 2);
-      
+      const getScrollDistance = () => {
+        if (!sectionRef.current) return 1000;
+        return Math.max(0, sectionRef.current.scrollWidth - window.innerWidth);
+      };
+
       gsap.to(sectionRef.current, {
-        x: () => -(sectionRef.current.scrollWidth - window.innerWidth),
+        x: () => -getScrollDistance(),
         ease: "none",
         scrollTrigger: {
           trigger: triggerRef.current,
           pin: true,
           scrub: 1,
           start: "top top",
-          end: () => `+=${sectionRef.current.scrollWidth - window.innerWidth}`,
+          end: () => `+=${getScrollDistance()}`,
           invalidateOnRefresh: true,
+          anticipatePin: 1,
         },
       });
 
@@ -96,9 +100,9 @@ const Projects = () => {
           trigger: ".projects-title",
           start: "top 85%",
         },
-        y: 30,
+        y: 20,
         opacity: 0,
-        duration: 1,
+        duration: 0.8,
         ease: "power3.out",
       });
     }, triggerRef);
@@ -110,65 +114,63 @@ const Projects = () => {
     <div ref={triggerRef} className="overflow-hidden bg-background">
       <section
         id="projects"
-        className="py-20 min-h-screen border-b-4 border-primary bg-news-dots flex flex-col justify-center relative"
+        className="pt-4 pb-4 md:pt-6 md:pb-6 border-b-4 border-primary bg-news-dots relative"
       >
-        <div className="container mx-auto px-4 mb-12">
+        <div className="container mx-auto px-4 mb-4">
           {/* Page Header */}
-          <div className="flex justify-between items-end border-b-2 border-primary pb-4 projects-title">
-            <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">Latest Insights</h2>
-            <span className="uppercase-label text-muted-text hidden md:block underline font-black">ARCHIVES / {new Date().getFullYear()} EDITION</span>
+          <div className="flex justify-between items-end border-b-2 border-primary pb-2 projects-title">
+            <h2 className="headline-serif text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary">
+              Latest Insights
+            </h2>
+            <span className="uppercase-label text-muted-text hidden md:block underline font-black">
+              ARCHIVES / {new Date().getFullYear()} EDITION
+            </span>
           </div>
         </div>
 
-        <div ref={sectionRef} className="flex gap-10 px-4 md:px-[5vw]">
+        <div ref={sectionRef} className="flex gap-8 px-4 md:px-[5vw]">
           {projects.map((project, index) => (
             <div 
               key={index} 
-              className="group flex flex-col shrink-0 w-[85vw] md:w-[450px] border-b border-primary/10 pb-10"
+              className="group flex flex-col shrink-0 w-[85vw] md:w-[420px] pb-2"
             >
-              {/* Project Image */}
-              <div className="border-4 border-primary p-2 mb-6 bg-white overflow-hidden shadow-[6px_6px_0px_0px_rgba(17,17,17,1)] group-hover:shadow-[10px_10px_0px_0px_rgba(204,0,0,1)] transition-all duration-300">
+              {/* Project Image with Silky Smooth Hover Transition */}
+              <div className="border-4 border-primary p-1.5 mb-3 bg-white overflow-hidden shadow-[5px_5px_0px_0px_rgba(17,17,17,1)] group-hover:shadow-[8px_8px_0px_0px_rgba(204,0,0,1)] transition-all duration-500 ease-out">
                 <div className="overflow-hidden">
                   <img
                     src={project.image}
                     alt={project.title}
-                    className="w-full aspect-video object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-110"
+                    className="w-full aspect-video object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
                   />
                 </div>
               </div>
               
-              {/* Metadata */}
-              <div className="flex justify-between mono-data text-[0.65rem] font-black uppercase mb-4 text-muted-text tracking-widest">
-                <span className="border-b border-accent">BY ABHAY KUMAR DAS</span>
-                <span className="bg-primary text-background px-2">2024-01-15</span>
-              </div>
-              
               {/* Title */}
-              <h3 className="headline-serif text-2xl md:text-3xl font-black mb-4 uppercase group-hover:text-accent transition-colors leading-[0.9] text-primary">
+              <h3 className="headline-serif text-2xl md:text-3xl font-black mb-2.5 uppercase group-hover:text-accent transition-colors duration-400 ease-out leading-[0.9] text-primary">
                 {project.title}
               </h3>
-              
+
               {/* Description */}
-              <p className="text-primary font-bold leading-tight mb-6 text-justify line-clamp-4 text-sm opacity-90 italic border-l-2 border-primary pl-4">
+              <p className="text-primary font-bold leading-tight mb-3 text-justify line-clamp-3 text-sm opacity-90 italic border-l-2 border-primary pl-3">
                 {project.description}
               </p>
 
               {/* Technologies */}
-              <div className="flex flex-wrap gap-2 mb-6 mt-auto">
+              <div className="flex flex-wrap gap-2 mb-4 mt-auto">
                 {project.tech.map((t, i) => (
-                  <span key={i} className="uppercase-label text-[0.55rem] font-black border-2 border-primary px-3 py-1 bg-neutral-100 group-hover:bg-accent group-hover:text-background group-hover:border-accent transition-colors duration-300">
+                  <span key={i} className="uppercase-label text-[0.55rem] font-black border-2 border-primary px-2.5 py-0.5 bg-neutral-100 group-hover:bg-accent group-hover:text-background group-hover:border-accent transition-colors duration-300 ease-out">
                     {t}
                   </span>
                 ))}
               </div>
 
               {/* Links */}
-              <div className="flex items-center gap-6 border-t-2 border-primary pt-6">
+              <div className="flex items-center gap-6 border-t-2 border-primary pt-3">
                 <a 
                   href={project.link} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="uppercase-label text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors"
+                  className="uppercase-label text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors duration-300 ease-out"
                 >
                   <FiExternalLink className="w-4 h-4" /> 
                   <span>Visit Site</span>
@@ -177,8 +179,8 @@ const Projects = () => {
                   <a 
                     href={project.github} 
                     target="_blank" 
-                    rel="noopener noreferrer"
-                    className="uppercase-label text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors border-l-2 border-primary pl-6"
+                    rel="noopener noreferrer" 
+                    className="uppercase-label text-xs font-black flex items-center gap-2 group-hover:text-accent transition-colors duration-300 ease-out border-l-2 border-primary pl-6"
                   >
                     <FiGithub className="w-4 h-4" />
                     <span>Github</span>
@@ -187,24 +189,6 @@ const Projects = () => {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Breaking News Ticker (Optional but cool) */}
-        <div className="mt-24 border-y-4 border-primary bg-primary py-3 overflow-hidden whitespace-nowrap">
-          <div className="flex animate-marquee">
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center gap-20 mx-10">
-                <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
-                  NEW PROJECT LAUNCHED: ECOSTORE WEB APP - FULL STACK PERFORMANCE AT SCALE
-                </span>
-                <span className="text-accent text-xl">★</span>
-                <span className="text-background uppercase-label text-xs font-black tracking-[0.2em]">
-                  SIZZLE INDIA: FRONTEND MASTERPIECE - GSAP ANIMATION INTEGRITY VERIFIED
-                </span>
-                <span className="text-accent text-xl">★</span>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </div>
