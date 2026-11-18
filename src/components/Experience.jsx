@@ -1,4 +1,4 @@
-import { useState, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -7,21 +7,21 @@ gsap.registerPlugin(ScrollTrigger);
 const Experience = () => {
   const containerRef = useRef(null);
   const cardRefs = useRef([]);
-  const [activeIdx, setActiveIdx] = useState(0);
 
+  // Ordered in Ascending Chronological Order (2023 -> 2024 -> 2025 -> Present)
   const experiences = [
     {
       id: 1,
-      company: "Inkstall Edutech Pvt. Ltd.",
-      position: "Software Developer",
-      duration: "2025 - Present",
-      location: "Goregaon West",
+      company: "Independent Tech Consultant",
+      position: "Full Stack & Web Developer",
+      duration: "2023 - 2024",
+      location: "Mumbai",
       description:
-        "Lead developer in building scalable web applications using React and Node.js. Mentored junior developers and implemented CI/CD pipelines.",
+        "Engineered performant full-stack client applications, database backends, and responsive UI systems for digital brands.",
       highlights: [
-        "DEVELOPED A REAL-TIME ANALYTICS DASHBOARD WITH REACT AND CHART.JS",
-        "IMPLEMENTED MICROSERVICES ARCHITECTURE USING DOCKER AND KUBERNETES",
-        "OPTIMIZED APPLICATION PERFORMANCE BY 40% THROUGH CODE OPTIMIZATION AND CACHING STRATEGIES",
+        "ARCHITECTED MODERN RESPONSIVE PORTALS WITH REACT, TAILWIND CSS, AND NODE.JS",
+        "DESIGNED SCALABLE RELATIONAL AND NOSQL DATABASE SCHEMAS WITH POSTGRESQL AND MONGODB",
+        "STREAMLINED BUILD PIPELINES AND AUTOMATED DEPLOYMENT WORKFLOWS",
       ],
     },
     {
@@ -40,16 +40,16 @@ const Experience = () => {
     },
     {
       id: 3,
-      company: "Independent Tech Consultant",
-      position: "Full Stack & Web Developer",
-      duration: "2023 - 2024",
-      location: "Mumbai",
+      company: "Inkstall Edutech Pvt. Ltd.",
+      position: "Software Developer",
+      duration: "2025 - Present",
+      location: "Goregaon West",
       description:
-        "Engineered performant full-stack client applications, database backends, and responsive UI systems for digital brands.",
+        "Lead developer in building scalable web applications using React and Node.js. Mentored junior developers and implemented CI/CD pipelines.",
       highlights: [
-        "ARCHITECTED MODERN RESPONSIVE PORTALS WITH REACT, TAILWIND CSS, AND NODE.JS",
-        "DESIGNED SCALABLE RELATIONAL AND NOSQL DATABASE SCHEMAS WITH POSTGRESQL AND MONGODB",
-        "STREAMLINED BUILD PIPELINES AND AUTOMATED DEPLOYMENT WORKFLOWS",
+        "DEVELOPED A REAL-TIME ANALYTICS DASHBOARD WITH REACT AND CHART.JS",
+        "IMPLEMENTED MICROSERVICES ARCHITECTURE USING DOCKER AND KUBERNETES",
+        "OPTIMIZED APPLICATION PERFORMANCE BY 40% THROUGH CODE OPTIMIZATION AND CACHING STRATEGIES",
       ],
     },
   ];
@@ -60,7 +60,7 @@ const Experience = () => {
       if (!cards.length) return;
 
       // Initial States:
-      // Card 0 is visible; Cards 1 and 2 start hidden below
+      // Card 0 (2023 - 2024) is visible; Cards 1 and 2 start hidden below
       gsap.set(cards[0], {
         opacity: 1,
         y: 0,
@@ -80,7 +80,7 @@ const Experience = () => {
 
       // Master Pinned Timeline:
       // The section pins at top, stopping the heading, left column, and right column from scrolling away!
-      // On scroll, the careers reveal ONE BY ONE with dynamic morphing.
+      // On scroll, the careers reveal ONE BY ONE in ascending chronological order.
       const tl = gsap.timeline({
         scrollTrigger: {
           id: "experience-pin",
@@ -91,16 +91,6 @@ const Experience = () => {
           scrub: 0.8,
           anticipatePin: 1,
           refreshPriority: 8,
-          onUpdate: (self) => {
-            const p = self.progress;
-            if (p < 0.32) {
-              setActiveIdx(0);
-            } else if (p < 0.68) {
-              setActiveIdx(1);
-            } else {
-              setActiveIdx(2);
-            }
-          },
         },
       });
 
@@ -170,18 +160,6 @@ const Experience = () => {
     return () => ctx.revert();
   }, []);
 
-  const handleTabClick = (idx) => {
-    const st = ScrollTrigger.getById("experience-pin");
-    if (st) {
-      const targetProgress = idx === 0 ? 0.05 : idx === 1 ? 0.46 : 0.86;
-      const targetScroll = st.start + (st.end - st.start) * targetProgress;
-      window.scrollTo({
-        top: targetScroll,
-        behavior: "smooth",
-      });
-    }
-  };
-
   return (
     <section 
       id="experience" 
@@ -190,7 +168,7 @@ const Experience = () => {
     >
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Pinned Section Header - Stays stationary during scroll */}
-        <div className="flex justify-between items-end border-b-2 border-primary pb-3 mb-6 sm:mb-8 experience-title">
+        <div className="flex justify-between items-end border-b-2 border-primary pb-3 mb-8 sm:mb-10 experience-title">
           <h2 className="headline-serif text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter text-primary leading-none">
             DISPATCH: CAREER
           </h2>
@@ -199,8 +177,8 @@ const Experience = () => {
           </span>
         </div>
 
-        {/* 2-Column Split Layout: Both Left and Right stay pinned while right-side careers reveal 1-by-1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
+        {/* 2-Column Split Layout: Both Left and Right stay pinned while right-side careers reveal 1-by-1 in ascending order */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* ========================================================================= */}
           {/* LEFT COLUMN: Executive Summary & KPIs (Pinned in view)                    */}
@@ -241,35 +219,10 @@ const Experience = () => {
           </div>
 
           {/* ========================================================================= */}
-          {/* RIGHT COLUMN: Pinned Dynamic Stage - Careers Show ONE BY ONE on Scroll    */}
+          {/* RIGHT COLUMN: Pinned Dynamic Stage - Careers Show ONE BY ONE (Ascending)  */}
           {/* ========================================================================= */}
-          <div className="lg:col-span-8 flex flex-col">
+          <div className="lg:col-span-8 flex flex-col pt-2 sm:pt-4">
             
-            {/* Interactive Timeline Progress Tab Bar */}
-            <div className="flex items-center justify-between gap-2 mb-6 border-b-2 border-primary/30 pb-3">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                {experiences.map((exp, idx) => (
-                  <button
-                    key={exp.id}
-                    onClick={() => handleTabClick(idx)}
-                    className={`group flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xs transition-all duration-300 cursor-pointer ${
-                      activeIdx === idx
-                        ? "bg-primary text-background font-black shadow-[3px_3px_0px_0px_rgba(204,0,0,1)] scale-[1.02]"
-                        : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-bold border border-neutral-300"
-                    }`}
-                  >
-                    <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${activeIdx === idx ? "bg-accent animate-pulse" : "bg-neutral-400"}`} />
-                    <span className="mono-data text-[0.62rem] sm:text-xs tracking-wider uppercase">
-                      0{idx + 1}. {exp.duration}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div className="mono-data text-[0.65rem] sm:text-xs font-black text-accent tracking-widest hidden sm:block">
-                TIMELINE // 0{activeIdx + 1} OF 03
-              </div>
-            </div>
-
             {/* Dynamic Stage: Fixed Height Container with Staged Absolute Cards */}
             <div className="relative w-full min-h-[380px] sm:min-h-[360px] lg:min-h-[380px]">
               {experiences.map((exp, idx) => (
