@@ -6,8 +6,9 @@ const Footer = ({ isSepia, setIsSepia }) => {
   const ctaRef = useRef(null);
   const glowRef = useRef(null);
   const accentGlowRef = useRef(null);
-  const marquee1Ref = useRef(null);
-  const marquee2Ref = useRef(null);
+  const deepDuplicateRef = useRef(null);
+  const midDuplicateRef = useRef(null);
+  const foregroundRef = useRef(null);
   const quickToX = useRef(null);
   const quickToY = useRef(null);
   const quickToAccentX = useRef(null);
@@ -44,28 +45,73 @@ const Footer = ({ isSepia, setIsSepia }) => {
     if (quickToAccentX.current) quickToAccentX.current(x);
     if (quickToAccentY.current) quickToAccentY.current(y);
 
-    // Subtle 3D parallax drift on the background marquee ribbons
-    const normX = (x / rect.width - 0.5) * 45;
-    const normY = (y / rect.height - 0.5) * 25;
+    // Normalized mouse offsets from center (-1 to 1)
+    const normX = (x / rect.width - 0.5) * 2;
+    const normY = (y / rect.height - 0.5) * 2;
 
-    if (marquee1Ref.current) {
-      gsap.to(marquee1Ref.current, { x: normX, y: normY, duration: 0.6, ease: "power2.out", overwrite: "auto" });
+    // Deep Perspective Ghost Layer (moves further away with larger opposing parallax)
+    if (deepDuplicateRef.current) {
+      gsap.to(deepDuplicateRef.current, {
+        x: -normX * 45,
+        y: -normY * 30,
+        rotateY: normX * 12,
+        rotateX: -normY * 10,
+        scale: 1.05,
+        duration: 0.65,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
     }
-    if (marquee2Ref.current) {
-      gsap.to(marquee2Ref.current, { x: -normX, y: -normY, duration: 0.6, ease: "power2.out", overwrite: "auto" });
+
+    // Mid-Depth Accent Ghost Layer (moves at intermediate depth)
+    if (midDuplicateRef.current) {
+      gsap.to(midDuplicateRef.current, {
+        x: -normX * 22,
+        y: -normY * 15,
+        rotateY: normX * 7,
+        rotateX: -normY * 6,
+        scale: 1.025,
+        duration: 0.55,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    }
+
+    // Foreground Interactive Layer (subtle tilt towards cursor)
+    if (foregroundRef.current) {
+      gsap.to(foregroundRef.current, {
+        x: normX * 12,
+        y: normY * 8,
+        rotateY: normX * 3.5,
+        rotateX: -normY * 3.5,
+        duration: 0.45,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
     }
   };
 
   const handleMouseEnter = () => {
     if (glowRef.current) gsap.to(glowRef.current, { opacity: 0.95, duration: 0.35 });
     if (accentGlowRef.current) gsap.to(accentGlowRef.current, { opacity: 0.75, duration: 0.35 });
+    if (deepDuplicateRef.current) gsap.to(deepDuplicateRef.current, { opacity: 0.9, duration: 0.4 });
+    if (midDuplicateRef.current) gsap.to(midDuplicateRef.current, { opacity: 0.95, duration: 0.4 });
   };
 
   const handleMouseLeave = () => {
     if (glowRef.current) gsap.to(glowRef.current, { opacity: 0.5, duration: 0.6 });
     if (accentGlowRef.current) gsap.to(accentGlowRef.current, { opacity: 0.3, duration: 0.6 });
-    if (marquee1Ref.current) gsap.to(marquee1Ref.current, { x: 0, y: 0, duration: 0.8, ease: "power2.out" });
-    if (marquee2Ref.current) gsap.to(marquee2Ref.current, { x: 0, y: 0, duration: 0.8, ease: "power2.out" });
+    
+    // Smoothly return all 3D duplicate layers to center
+    if (deepDuplicateRef.current) {
+      gsap.to(deepDuplicateRef.current, { x: 0, y: 0, rotateX: 0, rotateY: 0, scale: 1, opacity: 0.65, duration: 0.8, ease: "power2.out", overwrite: "auto" });
+    }
+    if (midDuplicateRef.current) {
+      gsap.to(midDuplicateRef.current, { x: 0, y: 0, rotateX: 0, rotateY: 0, scale: 1, opacity: 0.7, duration: 0.8, ease: "power2.out", overwrite: "auto" });
+    }
+    if (foregroundRef.current) {
+      gsap.to(foregroundRef.current, { x: 0, y: 0, rotateX: 0, rotateY: 0, duration: 0.8, ease: "power2.out", overwrite: "auto" });
+    }
   };
 
   const scrollToTop = () => {
@@ -76,9 +122,9 @@ const Footer = ({ isSepia, setIsSepia }) => {
   };
 
   return (
-    <footer className="bg-background pt-0 pb-6 relative overflow-hidden transition-colors duration-700">
+    <footer className="bg-background bg-news-dots pt-0 pb-6 relative overflow-hidden transition-colors duration-700">
       {/* ========================================================================= */}
-      {/* Pre-Footer CTA Section with Cursor-Tracking Ambient Background Animation  */}
+      {/* Pre-Footer CTA Section with 3D Duplicated Background Depth Animation      */}
       {/* ========================================================================= */}
       <div 
         ref={ctaRef}
@@ -86,6 +132,7 @@ const Footer = ({ isSepia, setIsSepia }) => {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         className="bg-primary text-background py-16 md:py-24 mb-10 border-y-8 border-primary relative overflow-hidden group cursor-default select-none"
+        style={{ perspective: "1000px" }}
       >
         {/* Dynamic Interactive Cursor-Following Glowing Orbs */}
         <div 
@@ -104,31 +151,63 @@ const Footer = ({ isSepia, setIsSepia }) => {
         {/* Newsprint Dot Grid Overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40" />
 
-        {/* Animated Marquee Ribbons with 3D Parallax Tracking */}
-        <div className="absolute inset-0 flex flex-col justify-around pointer-events-none select-none opacity-[0.07] overflow-hidden">
-          <div ref={marquee1Ref} className="will-change-transform">
-            <div className="flex animate-marquee whitespace-nowrap text-6xl md:text-8xl font-black headline-serif uppercase tracking-widest text-background">
-              {[...Array(6)].map((_, i) => (
-                <span key={i} className="mx-6">
-                  TRANSFORM • INNOVATE • SCALE • ARCHITECTURE • FULLSTACK • 
-                </span>
-              ))}
+        {/* ========================================================================= */}
+        {/* LAYER 1: Deep Perspective Ghost Layer (Duplicated Text & Buttons)         */}
+        {/* ========================================================================= */}
+        <div 
+          ref={deepDuplicateRef} 
+          className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none z-1 will-change-transform px-4 opacity-65"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <h2 className="headline-serif text-4xl md:text-8xl font-black mb-8 leading-none max-w-5xl tracking-tighter text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.18)]">
+            Ready to transform your workflow?
+          </h2>
+          <p className="text-sm md:text-xl mb-12 max-w-3xl font-medium leading-relaxed italic text-white/10">
+            Join the ranks of innovative brands already leveraging advanced web solutions to drive engagement and achieve unparalleled success in the digital editorial space.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
+            <div className="border-2 border-white/20 px-10 py-5 uppercase-label text-sm font-black text-white/20 shadow-[8px_8px_0px_0px_rgba(255,255,255,0.06)] text-center">
+              Start Collaboration
             </div>
-          </div>
-          <div ref={marquee2Ref} className="will-change-transform">
-            <div className="flex animate-marquee-reverse whitespace-nowrap text-6xl md:text-8xl font-black headline-serif uppercase tracking-widest text-background">
-              {[...Array(6)].map((_, i) => (
-                <span key={i} className="mx-6">
-                  EDITORIAL VISION • ENTERPRISE SOLUTIONS • MODERN WEB • 2026 • 
-                </span>
-              ))}
+            <div className="border-2 border-white/15 px-10 py-5 uppercase-label text-sm font-black text-white/15 text-center">
+              Schedule a Call
             </div>
           </div>
         </div>
 
-        {/* Foreground Content */}
-        <div className="container mx-auto px-4 flex flex-col items-center text-center relative z-10 pointer-events-auto">
-          <h2 className="headline-serif text-4xl md:text-8xl font-black mb-8 leading-none max-w-5xl tracking-tighter">
+        {/* ========================================================================= */}
+        {/* LAYER 2: Mid-Depth Accent Ghost Layer (Duplicated Text & Buttons)        */}
+        {/* ========================================================================= */}
+        <div 
+          ref={midDuplicateRef} 
+          className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none select-none z-2 will-change-transform px-4 opacity-70"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <h2 className="headline-serif text-4xl md:text-8xl font-black mb-8 leading-none max-w-5xl tracking-tighter text-transparent [-webkit-text-stroke:1.5px_rgba(204,0,0,0.35)] drop-shadow-[0_0_25px_rgba(204,0,0,0.2)]">
+            Ready to transform your workflow?
+          </h2>
+          <p className="text-sm md:text-xl mb-12 max-w-3xl font-medium leading-relaxed italic text-accent/20">
+            Join the ranks of innovative brands already leveraging advanced web solutions to drive engagement and achieve unparalleled success in the digital editorial space.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
+            <div className="border border-accent/40 bg-accent/5 px-10 py-5 uppercase-label text-sm font-black text-accent/40 shadow-[8px_8px_0px_0px_rgba(204,0,0,0.35)] text-center">
+              Start Collaboration
+            </div>
+            <div className="border border-white/25 px-10 py-5 uppercase-label text-sm font-black text-white/25 text-center">
+              Schedule a Call
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* LAYER 3: Foreground Main Interactive Content                             */}
+        {/* ========================================================================= */}
+        <div 
+          ref={foregroundRef}
+          className="container mx-auto px-4 flex flex-col items-center text-center relative z-10 pointer-events-auto will-change-transform"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <h2 className="headline-serif text-4xl md:text-8xl font-black mb-8 leading-none max-w-5xl tracking-tighter text-background">
             Ready to transform your workflow?
           </h2>
           <p className="text-sm md:text-xl mb-12 opacity-85 max-w-3xl font-medium leading-relaxed italic">
@@ -137,13 +216,13 @@ const Footer = ({ isSepia, setIsSepia }) => {
           <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto">
             <a 
               href="#contact" 
-              className="bg-background text-primary px-10 py-5 uppercase-label text-sm font-black hover:bg-neutral-200 transition-all duration-300 shadow-[8px_8px_0px_0px_rgba(204,0,0,1)] text-center"
+              className="bg-background text-primary px-10 py-5 uppercase-label text-sm font-black hover:bg-neutral-200 transition-all duration-300 shadow-[8px_8px_0px_0px_rgba(204,0,0,1)] text-center cursor-pointer"
             >
               Start Collaboration
             </a>
             <a 
               href="#contact" 
-              className="border-4 border-background text-background px-10 py-5 uppercase-label text-sm font-black hover:bg-background hover:text-primary transition-all duration-300 text-center"
+              className="border-4 border-background text-background px-10 py-5 uppercase-label text-sm font-black hover:bg-background hover:text-primary transition-all duration-300 text-center cursor-pointer"
             >
               Schedule a Call
             </a>
@@ -169,7 +248,7 @@ const Footer = ({ isSepia, setIsSepia }) => {
             {/* Theme Toggle Button */}
             <button 
               onClick={() => setIsSepia(!isSepia)}
-              className="mt-6 flex items-center gap-3 border-2 border-primary px-4 py-2 hover:bg-primary hover:text-background transition-all duration-300 group"
+              className="mt-6 flex items-center gap-3 border-2 border-primary px-4 py-2 hover:bg-primary hover:text-background transition-all duration-300 group cursor-pointer"
             >
               <div className={`w-3 h-3 rounded-full ${isSepia ? 'bg-accent' : 'bg-primary group-hover:bg-background'} transition-colors`}></div>
               <span className="uppercase-label text-[0.6rem] font-black">Daily Edition: {isSepia ? 'Sepia' : 'Standard'}</span>
@@ -211,7 +290,7 @@ const Footer = ({ isSepia, setIsSepia }) => {
             </div>
             <button 
               onClick={scrollToTop}
-              className="mt-8 border-4 border-primary p-3 w-12 h-12 flex items-center justify-center hover:bg-accent hover:text-background transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] group"
+              className="mt-8 border-4 border-primary p-3 w-12 h-12 flex items-center justify-center hover:bg-accent hover:text-background transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] group cursor-pointer"
               title="Return to Masthead"
             >
               <span className="font-black text-xl group-hover:-translate-y-1 transition-transform">↑</span>

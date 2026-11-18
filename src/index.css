@@ -84,6 +84,9 @@ body {
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-background);
+  background-image: radial-gradient(rgba(17, 17, 17, 0.065) 0.8px, transparent 0.8px);
+  background-size: 6px 6px;
 }
 
 

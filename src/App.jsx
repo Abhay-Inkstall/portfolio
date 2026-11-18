@@ -360,7 +360,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-body transition-colors duration-700 overflow-x-clip">
+    <div className="min-h-screen bg-background bg-news-dots font-body transition-colors duration-700 overflow-x-clip">
       {loading && <Loader onComplete={handleLoaderComplete} />}
 
       {/* Fixed Sticky Navbar for the entire portfolio */}
