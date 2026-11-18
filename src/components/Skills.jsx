@@ -282,9 +282,6 @@ const Skills = () => {
               PINNED BOARD
             </span>
           </div>
-          <span className="uppercase-label text-muted-text hidden md:block underline font-black text-xs md:text-sm">
-            EDITORIAL INVENTORY // 6 CORE DIVISIONS
-          </span>
         </div>
 
         {/* 6 Skill Categories Grid */}

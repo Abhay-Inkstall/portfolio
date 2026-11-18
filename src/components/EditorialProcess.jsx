@@ -220,14 +220,9 @@ const EditorialProcess = () => {
          <div className="p-10 sm:p-12 lg:p-20 xl:p-24 border-b lg:border-b-0 lg:border-r-4 border-primary flex flex-col justify-between overflow-hidden min-h-[440px] sm:min-h-[480px] lg:min-h-[520px] relative">
             <div className={`${leftAnimClasses} flex flex-col justify-between h-full`}>
                <div>
-                  <div className="flex justify-between items-center mb-8">
-                     <svg className="w-12 h-12 text-accent opacity-20 fill-current" viewBox="0 0 24 24">
-                       <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21V18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM3.01704 21L3.01704 18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21ZM3.01704 21V18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21Z" transform="translate(0, -8)" />
-                     </svg>
-                     <div className="flex items-center gap-1.5 mono-data text-[0.62rem] font-bold text-muted-text">
-                        <span className="text-accent uppercase tracking-widest">DISPATCH // 0{reviewIndex + 1} OF 0{leftReviews.length}</span>
-                     </div>
-                  </div>
+                  <svg className="w-12 h-12 text-accent mb-8 opacity-20 fill-current" viewBox="0 0 24 24">
+                    <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21V18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM3.01704 21L3.01704 18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21ZM3.01704 21V18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21Z" transform="translate(0, -8)" />
+                  </svg>
                   <p className="headline-serif text-2xl sm:text-3xl md:text-4xl font-black mb-10 leading-tight italic">
                     "{currentLeft.quote}"
                   </p>
@@ -248,14 +243,9 @@ const EditorialProcess = () => {
          <div className="p-10 sm:p-12 lg:p-20 xl:p-24 flex flex-col justify-between bg-primary/2 overflow-hidden min-h-[440px] sm:min-h-[480px] lg:min-h-[520px] relative">
             <div className={`${rightAnimClasses} flex flex-col justify-between h-full`}>
                <div>
-                  <div className="flex justify-between items-center mb-8">
-                     <svg className="w-12 h-12 text-accent opacity-20 fill-current" viewBox="0 0 24 24">
-                       <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21V18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM3.01704 21L3.01704 18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21ZM3.01704 21V18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21Z" transform="translate(0, -8)" />
-                     </svg>
-                     <div className="flex items-center gap-1.5 mono-data text-[0.62rem] font-bold text-muted-text">
-                        <span className="text-accent uppercase tracking-widest">DISPATCH // 0{reviewIndex + 1} OF 0{rightReviews.length}</span>
-                     </div>
-                  </div>
+                  <svg className="w-12 h-12 text-accent mb-8 opacity-20 fill-current" viewBox="0 0 24 24">
+                    <path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM14.017 21V18C14.017 16.8954 14.9124 16 16.017 16H19.017C20.1216 16 21.017 16.8954 21.017 18V21C21.017 22.1046 20.1216 23 19.017 23H16.017C14.9124 23 14.017 22.1046 14.017 21ZM3.01704 21L3.01704 18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21ZM3.01704 21V18C3.01704 16.8954 3.91247 16 5.01704 16H8.01704C9.12161 16 10.017 16.8954 10.017 18V21C10.017 22.1046 9.12161 23 8.01704 23H5.01704C3.91247 23 3.01704 22.1046 3.01704 21Z" transform="translate(0, -8)" />
+                  </svg>
                   <p className="headline-serif text-2xl sm:text-3xl md:text-4xl font-black mb-10 leading-tight italic">
                     "{currentRight.quote}"
                   </p>

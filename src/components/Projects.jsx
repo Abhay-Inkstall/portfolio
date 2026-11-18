@@ -156,9 +156,6 @@ const Projects = () => {
               Latest Insights
             </h2>
             <div className="flex items-center gap-4">
-              <span className="uppercase-label text-muted-text hidden md:block underline font-black">
-                ARCHIVES // {new Date().getFullYear()} EDITION
-              </span>
               <span className="lg:hidden mono-data text-[0.6rem] font-bold text-accent animate-pulse">
                 SWIPE HORIZONTALLY →
               </span>
