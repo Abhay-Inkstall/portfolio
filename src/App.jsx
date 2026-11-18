@@ -32,7 +32,7 @@ function App() {
   const mobilePageScreenRef = useRef(null);
   const navbarWrapperRef = useRef(null);
 
-  // 5 dynamic breaking news headlines changing smoothly every second
+  // 5 dynamic breaking news headlines changing smoothly every 3 seconds
   const headlines = [
     "TRANSFORMING THE WAY YOUR IDEAS WORK",
     "ENGINEERING SCALABLE FULL-STACK SYSTEMS",
@@ -51,8 +51,8 @@ function App() {
       setTimeout(() => {
         setHeadlineIndex((prev) => (prev + 1) % headlines.length);
         setHeadlineAnimState("in");
-      }, 250);
-    }, 1300);
+      }, 350);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [loading, headlines.length]);
