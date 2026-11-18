@@ -171,6 +171,15 @@ select:autofill:focus {
   animation: marquee 65s linear infinite;
 }
 
+@keyframes marqueeReverse {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
+.animate-marquee-reverse {
+  animation: marqueeReverse 75s linear infinite;
+}
+
 .pause-animation {
   animation-play-state: paused;
 }

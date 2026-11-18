@@ -44,15 +44,17 @@ const Experience = () => {
       // Title Animation
       gsap.fromTo(
         ".experience-title",
-        { y: 50, opacity: 0 },
+        { y: 40, opacity: 0 },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
+          duration: 0.9,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: ".experience-title",
+            trigger: containerRef.current,
             start: "top 85%",
+            toggleActions: "play none none none",
+            refreshPriority: 8,
           },
         }
       );
@@ -60,16 +62,18 @@ const Experience = () => {
       // Cards Animation
       gsap.fromTo(
         ".experience-card",
-        { y: 50, opacity: 0 },
+        { y: 40, opacity: 0 },
         {
           y: 0,
           opacity: 1,
           duration: 0.8,
-          stagger: 0.3,
+          stagger: 0.25,
           ease: "power3.out",
           scrollTrigger: {
             trigger: ".experience-container",
             start: "top 80%",
+            toggleActions: "play none none none",
+            refreshPriority: 8,
           },
         }
       );

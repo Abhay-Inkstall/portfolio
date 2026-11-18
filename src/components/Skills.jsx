@@ -47,7 +47,6 @@ const PushPin = ({ angle = 0 }) => (
 
 const Skills = () => {
   const containerRef = useRef(null);
-  const contentRef = useRef(null);
   const cardsRef = useRef([]);
   const pinsRef = useRef([]);
 
@@ -129,7 +128,7 @@ const Skills = () => {
       // Header Animation
       gsap.fromTo(
         ".skills-title",
-        { y: 30, opacity: 0 },
+        { y: 35, opacity: 0 },
         {
           y: 0,
           opacity: 1,
@@ -139,211 +138,69 @@ const Skills = () => {
             trigger: containerRef.current,
             start: "top 80%",
             toggleActions: "play none none none",
+            refreshPriority: 6,
           },
         }
       );
 
-      const mm = gsap.matchMedia();
+      const cards = cardsRef.current.filter(Boolean);
+      const pins = pinsRef.current.filter(Boolean);
 
-      // DESKTOP (lg screens): Pinned scroll with Row 1 & Row 2 Centered Scroll Shift
-      mm.add("(min-width: 1024px)", () => {
-        const cards = cardsRef.current.filter(Boolean);
-        const pins = pinsRef.current.filter(Boolean);
-        const cardAngles = skillCategories.map((c) => c.angle);
-        const isShown = [false, false, false, false, false, false];
-        let isRow2Shifted = false;
+      // Clean, rock-solid stagger reveal: Cards pop into place and STAY visible!
+      // No artificial 2000px pin lock, no blank-screen threshold hacks, no row jumps
+      cards.forEach((card, idx) => {
+        const pin = pins[idx];
+        const targetAngle = skillCategories[idx]?.angle || 0;
 
-        // Initial setup - hide all cards and pins
-        cards.forEach((card) => {
-          gsap.set(card, {
-            scale: 0,
+        gsap.fromTo(
+          card,
+          {
             opacity: 0,
-            y: -25,
+            y: 40,
+            scale: 0.92,
             rotation: 0,
-            transformOrigin: "50% 0%",
-          });
-        });
-
-        pins.forEach((pin) => {
-          gsap.set(pin, {
-            scale: 0,
-            y: -15,
-            opacity: 0,
-          });
-        });
-
-        if (contentRef.current) {
-          gsap.set(contentRef.current, { y: 0 });
-        }
-
-        ScrollTrigger.create({
-          trigger: containerRef.current,
-          start: "top top",
-          end: "+=2000",
-          pin: true,
-          anticipatePin: 1,
-          onUpdate: (self) => {
-            const p = self.progress;
-
-            // Thresholds:
-            // Row 1 (Cards 0, 1, 2)
-            // Shift screen up between 0.42 and 0.48
-            // Row 2 (Cards 3, 4, 5)
-            const thresholds = [0.06, 0.18, 0.30, 0.54, 0.68, 0.82];
-
-            // 1. Pop In / Pop Out each Card
-            thresholds.forEach((th, idx) => {
-              const card = cards[idx];
-              const pin = pins[idx];
-              if (!card) return;
-
-              if (p >= th) {
-                if (!isShown[idx]) {
-                  isShown[idx] = true;
-                  gsap.to(card, {
-                    scale: 1,
-                    opacity: 1,
-                    rotation: cardAngles[idx],
-                    y: 0,
-                    duration: 0.45,
-                    ease: "back.out(2.2)",
-                    overwrite: "auto",
-                  });
-                  if (pin) {
-                    gsap.to(pin, {
-                      scale: 1,
-                      y: 0,
-                      opacity: 1,
-                      duration: 0.32,
-                      ease: "bounce.out",
-                      overwrite: "auto",
-                    });
-                  }
-                }
-              } else {
-                if (isShown[idx]) {
-                  isShown[idx] = false;
-                  gsap.to(card, {
-                    scale: 0,
-                    opacity: 0,
-                    rotation: 0,
-                    y: -25,
-                    duration: 0.25,
-                    ease: "power2.in",
-                    overwrite: "auto",
-                  });
-                  if (pin) {
-                    gsap.to(pin, {
-                      scale: 0,
-                      y: -15,
-                      opacity: 0,
-                      duration: 0.2,
-                      overwrite: "auto",
-                    });
-                  }
-                }
-              }
-            });
-
-            // 2. Scroll the whole content up (Header + Row 1 move up together, Row 2 centers)
-            // This prevents the heading from showing behind the cards!
-            if (contentRef.current && cards[3] && cards[0]) {
-              const shiftDistance = cards[3].offsetTop - cards[0].offsetTop;
-
-              if (p >= 0.44) {
-                if (!isRow2Shifted) {
-                  isRow2Shifted = true;
-                  gsap.to(contentRef.current, {
-                    y: -shiftDistance,
-                    duration: 0.55,
-                    ease: "power2.out",
-                    overwrite: "auto",
-                  });
-                }
-              } else {
-                if (isRow2Shifted) {
-                  isRow2Shifted = false;
-                  gsap.to(contentRef.current, {
-                    y: 0,
-                    duration: 0.5,
-                    ease: "power2.out",
-                    overwrite: "auto",
-                  });
-                }
-              }
-            }
           },
-        });
-      });
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            rotation: targetAngle,
+            duration: 0.65,
+            delay: idx * 0.08,
+            ease: "back.out(1.8)",
+            scrollTrigger: {
+              trigger: ".skills-grid",
+              start: "top 82%",
+              toggleActions: "play none none none",
+              refreshPriority: 6,
+            },
+          }
+        );
 
-      // TABLET & MOBILE (< 1024px): Cards pop in sequentially as user scrolls down naturally
-      mm.add("(max-width: 1023px)", () => {
-        const cards = cardsRef.current.filter(Boolean);
-        const pins = pinsRef.current.filter(Boolean);
-        const cardAngles = skillCategories.map((c) => c.angle);
-
-        if (contentRef.current) {
-          gsap.set(contentRef.current, { y: 0 });
-        }
-
-        cards.forEach((card, idx) => {
-          const pin = pins[idx];
-          gsap.set(card, {
-            scale: 0.2,
-            opacity: 0,
-            y: -20,
-            rotation: 0,
-            transformOrigin: "50% 0%",
-          });
-          if (pin) {
-            gsap.set(pin, {
+        if (pin) {
+          gsap.fromTo(
+            pin,
+            {
               scale: 0,
               y: -15,
               opacity: 0,
-            });
-          }
-
-          ScrollTrigger.create({
-            trigger: card,
-            start: "top 85%",
-            onEnter: () => {
-              gsap.to(card, {
-                scale: 1,
-                opacity: 1,
-                rotation: cardAngles[idx],
-                y: 0,
-                duration: 0.5,
-                ease: "back.out(2.2)",
-              });
-              if (pin) {
-                gsap.to(pin, {
-                  scale: 1,
-                  y: 0,
-                  opacity: 1,
-                  duration: 0.35,
-                  ease: "bounce.out",
-                });
-              }
             },
-            onLeaveBack: () => {
-              gsap.to(card, {
-                scale: 0.2,
-                opacity: 0,
-                rotation: 0,
-                y: -20,
-                duration: 0.25,
-              });
-              if (pin) {
-                gsap.to(pin, {
-                  scale: 0,
-                  y: -15,
-                  opacity: 0,
-                  duration: 0.2,
-                });
-              }
-            },
-          });
-        });
+            {
+              scale: 1,
+              y: 0,
+              opacity: 1,
+              duration: 0.45,
+              delay: idx * 0.08 + 0.12,
+              ease: "bounce.out",
+              scrollTrigger: {
+                trigger: ".skills-grid",
+                start: "top 82%",
+                toggleActions: "play none none none",
+                refreshPriority: 6,
+              },
+            }
+          );
+        }
       });
     }, containerRef);
 
@@ -354,28 +211,28 @@ const Skills = () => {
     <section 
       id="skills" 
       ref={containerRef} 
-      className="pt-10 pb-14 md:pt-12 md:pb-16 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
+      className="py-16 md:py-24 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
     >
-      <div 
-        ref={contentRef}
-        className="container mx-auto px-4 relative z-10 will-change-transform"
-      >
-        {/* Section Header - Clean headline without redundant text */}
-        <div className="border-b-2 border-primary pb-3 mb-8 skills-title">
+      <div className="container mx-auto px-4 relative z-10">
+        {/* Section Header */}
+        <div className="flex justify-between items-end border-b-2 border-primary pb-3 mb-10 skills-title">
           <h2 className="headline-serif text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary">
             Technical Specs
           </h2>
+          <span className="uppercase-label text-muted-text hidden md:block underline font-black">
+            EDITORIAL INVENTORY // 6 CORE DIVISIONS
+          </span>
         </div>
 
         {/* 6 Skill Categories Grid */}
-        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 gap-x-6">
+        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8">
           {skillCategories.map((category, idx) => (
             <div
               key={category.id}
               ref={(el) => (cardsRef.current[idx] = el)}
-              className="skill-card relative border-4 border-primary bg-white shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] flex flex-col pt-1"
+              className="skill-card relative border-4 border-primary bg-white shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] flex flex-col pt-1 transition-transform duration-300 hover:scale-[1.02] hover:z-20"
             >
-              {/* Attached Pushpin on Top */}
+              {/* Attached Authentic 3D Pushpin on Top */}
               <div ref={(el) => (pinsRef.current[idx] = el)}>
                 <PushPin angle={category.angle * 1.5} />
               </div>
@@ -393,12 +250,12 @@ const Skills = () => {
                 </span>
               </div>
               
-              {/* Skills Items - Fixed/Solid (No hover jitter/translate) */}
+              {/* Skills Items */}
               <div className="p-3.5 grid grid-cols-2 gap-2 bg-background/40">
                 {category.skills.map((skill, index) => (
                   <div 
                     key={index} 
-                    className="border-2 border-primary p-1.5 flex items-center gap-2 bg-white"
+                    className="border-2 border-primary p-1.5 flex items-center gap-2 bg-white shadow-[2px_2px_0px_0px_rgba(17,17,17,0.1)]"
                   >
                     <div className="w-1.5 h-1.5 bg-primary scale-75 rotate-45 flex-shrink-0"></div>
                     <span className="mono-data text-[0.62rem] font-black uppercase overflow-hidden text-ellipsis whitespace-nowrap text-primary">
@@ -411,13 +268,13 @@ const Skills = () => {
               {/* Card Footer */}
               <div className="mt-auto border-t-2 border-primary p-2 bg-neutral-100 flex justify-between items-center px-3.5">
                 <div className="flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                  <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></span>
                   <span className="uppercase-label text-[0.52rem] font-black text-primary">
                     SYSTEM_OPTIMIZED
                   </span>
                 </div>
                 <span className="mono-data text-[0.52rem] font-bold text-muted-text">
-                  SEC // {category.id}
+                  SEC // 0{category.id}
                 </span>
               </div>
             </div>

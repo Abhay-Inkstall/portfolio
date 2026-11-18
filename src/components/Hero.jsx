@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import heroImage from "../assets/heroImage.png";
+import logo from "../assets/logoBlack.png";
 
 const Hero = () => {
   const containerRef = useRef(null);
@@ -7,9 +8,22 @@ const Hero = () => {
   return (
     <section
       ref={containerRef}
-      className="relative bg-background bg-news-dots overflow-hidden pt-20 lg:pt-28"
+      className="relative bg-background bg-news-dots overflow-hidden pt-6 sm:pt-8 lg:pt-10"
     >
       <div className="container mx-auto px-4 pb-12 relative">
+        {/* Broadsheet Masthead Header Bar */}
+        <div className="w-full border-b-2 border-primary pb-2.5 mb-6 flex justify-between items-center text-primary">
+          <div className="flex items-center gap-2">
+            <img src={logo} alt="Logo" className="h-6 w-auto grayscale contrast-125" />
+            <span className="uppercase-label text-[0.65rem] sm:text-xs font-black tracking-widest">
+              THE DIGITAL DISPATCH
+            </span>
+          </div>
+          <div className="mono-data text-[0.6rem] sm:text-xs font-bold text-accent">
+            EDITION 2026 // VOL. 024 // ISSUE 01
+          </div>
+        </div>
+
         {/* Main Broadsheet Front Page Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 border-b-4 border-primary pb-12 hero-content">
           {/* Left Column - Main Headline & Story */}

@@ -21,13 +21,11 @@ function App() {
     return localStorage.getItem("sepiaMode") === "true";
   });
   const [loading, setLoading] = useState(true);
-  const [hasLanded, setHasLanded] = useState(false);
   const stageRef = useRef(null);
   const newspaperRef = useRef(null);
   const tvFrameRef = useRef(null);
   const indicatorRef = useRef(null);
-  const hasThrownRef = useRef(false);
-  const executeThrowRef = useRef(null);
+  const navbarWrapperRef = useRef(null);
 
   useEffect(() => {
     if (isSepia) {
@@ -50,218 +48,257 @@ function App() {
     setLoading(false);
   };
 
+  const getInitialScale = () => {
+    if (typeof window === "undefined") return 0.52;
+    const w = window.innerWidth;
+    if (w < 640) return 0.28;
+    if (w < 1024) return 0.40;
+    return 0.52;
+  };
+
   useLayoutEffect(() => {
     if (loading) return;
 
-    const executeThrow = () => {
-      if (hasThrownRef.current) return;
-      hasThrownRef.current = true;
+    window.scrollTo(0, 0);
+
+    const ctx = gsap.context(() => {
+      const initialScale = getInitialScale();
+
+      // Initial state: newspaper starts directly inside the TV screen frame, right side up, sharp and visible!
+      gsap.set(newspaperRef.current, {
+        scale: initialScale,
+        rotation: 0,
+        rotateX: 0,
+        rotateY: 0,
+        z: 0,
+        opacity: 1,
+        filter: "blur(0px)",
+        transformOrigin: "50% 50%",
+      });
+
+      if (navbarWrapperRef.current) {
+        gsap.set(navbarWrapperRef.current, {
+          opacity: 0,
+          y: -30,
+          pointerEvents: "none",
+        });
+      }
 
       const tl = gsap.timeline({
-        onComplete: () => {
-          setHasLanded(true);
-          gsap.set(newspaperRef.current, { clearProps: "transform,filter,opacity" });
-          if (tvFrameRef.current) {
-            tvFrameRef.current.style.display = "none";
-          }
-          ScrollTrigger.refresh();
+        scrollTrigger: {
+          trigger: stageRef.current,
+          start: "top top",
+          end: "+=1500",
+          pin: true,
+          scrub: 1, // Smooth scroll scrubbing
+          anticipatePin: 1,
+          refreshPriority: 10, // Top priority: Calculate Hero pin spacer first!
+          onUpdate: (self) => {
+            if (indicatorRef.current) {
+              indicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
+            }
+            if (tvFrameRef.current) {
+              tvFrameRef.current.style.visibility = self.progress > 0.75 ? "hidden" : "visible";
+            }
+            if (navbarWrapperRef.current) {
+              navbarWrapperRef.current.style.pointerEvents = self.progress > 0.85 ? "auto" : "none";
+            }
+          },
         },
       });
 
-      // 1. TV gently recedes and fades out
+      // 1. Remote control slides down and fades out (0% - 15%)
+      if (indicatorRef.current) {
+        tl.to(
+          indicatorRef.current,
+          {
+            opacity: 0,
+            y: 30,
+            scale: 0.94,
+            ease: "power1.out",
+            duration: 0.15,
+          },
+          0
+        );
+      }
+
+      // 2. The Newspaper rotates 360° OUT OF the TV screen directly to the user's screen!
+      // Scales from TV screen size (initialScale) to full viewport (1.0), while doing a 360° 3D spin!
+      tl.to(
+        newspaperRef.current,
+        {
+          scale: 1,
+          rotation: -360,
+          ease: "power2.out",
+          duration: 0.82,
+        },
+        0.05
+      );
+
+      // 3D perspective tilt dynamics as it flies through the air
+      tl.fromTo(
+        newspaperRef.current,
+        {
+          rotateX: 0,
+          rotateY: 0,
+        },
+        {
+          rotateX: 24,
+          rotateY: -18,
+          duration: 0.40,
+          yoyo: true,
+          repeat: 1,
+          ease: "sine.inOut",
+        },
+        0.05
+      );
+
+      // 3. As the newspaper lifts out of the TV screen, the TV behind it (displaying its black screen!) recedes
       tl.to(
         tvFrameRef.current,
         {
           opacity: 0,
-          scale: 0.8,
-          duration: 0.4,
+          scale: 0.68,
           ease: "power2.inOut",
+          duration: 0.45,
         },
-        0
+        0.20
       );
 
-      // 2. Hide scroll indicator
-      if (indicatorRef.current) {
-        tl.to(indicatorRef.current, { opacity: 0, duration: 0.15 }, 0);
-      }
-
-      // 3. The 360° Rotating Throw Animation: spins forward out of the center and lands on screen!
-      tl.fromTo(
+      // 4. Physical paper slap bounce recoil as it lands on the screen (86% - 100%)
+      tl.to(
         newspaperRef.current,
         {
-          scale: 0.1,
-          rotation: -720,
-          rotateX: 26,
-          rotateY: -20,
-          y: 0,
-          opacity: 0.2,
-          filter: "blur(6px)",
-          transformOrigin: "50% 40%",
+          y: -10,
+          scale: 1.012,
+          duration: 0.06,
+          ease: "power2.out",
         },
+        0.86
+      );
+      tl.to(
+        newspaperRef.current,
         {
-          scale: 1,
-          rotation: 0,
-          rotateX: 0,
-          rotateY: 0,
           y: 0,
-          opacity: 1,
-          filter: "blur(0px)",
-          duration: 1.15,
-          ease: "power4.out",
+          scale: 1,
+          duration: 0.06,
+          ease: "power2.in",
         },
-        0
-      )
-      // 4. Physical paper slap bounce recoil
-      .to(newspaperRef.current, {
-        y: -8,
-        scale: 1.015,
-        duration: 0.12,
-        ease: "power2.out",
-      })
-      .to(newspaperRef.current, {
-        y: 0,
-        scale: 1,
-        duration: 0.22,
-        ease: "bounce.out",
-      });
-    };
+        0.92
+      );
 
-    executeThrowRef.current = executeThrow;
+      // 5. Sticky Navbar docks into place smoothly (78% - 98%)
+      if (navbarWrapperRef.current) {
+        tl.to(
+          navbarWrapperRef.current,
+          {
+            opacity: 1,
+            y: 0,
+            ease: "power2.out",
+            duration: 0.20,
+          },
+          0.78
+        );
+      }
+    });
 
-    // Trigger throw on very little scroll or wheel
-    const onScrollOrWheel = () => {
-      executeThrow();
-    };
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
 
-    window.addEventListener("wheel", onScrollOrWheel, { passive: true, once: true });
-    window.addEventListener("touchmove", onScrollOrWheel, { passive: true, once: true });
-    window.addEventListener("scroll", onScrollOrWheel, { passive: true, once: true });
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.sort();
+      ScrollTrigger.refresh();
+    }, 200);
 
     return () => {
-      window.removeEventListener("wheel", onScrollOrWheel);
-      window.removeEventListener("touchmove", onScrollOrWheel);
-      window.removeEventListener("scroll", onScrollOrWheel);
+      clearTimeout(refreshTimer);
+      ctx.revert();
     };
   }, [loading]);
+
+  const handleRemoteClick = () => {
+    window.scrollTo({
+      top: 1500,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background font-body transition-colors duration-700 overflow-x-hidden">
       {loading && <Loader onComplete={handleLoaderComplete} />}
 
-      {/* Hero / Throw Stage */}
+      {/* Fixed Sticky Navbar for the entire portfolio */}
       <div 
-        ref={stageRef}
-        className="relative bg-background overflow-hidden min-h-screen w-full flex items-center justify-center bg-news-dots"
-        style={{ perspective: "1200px" }}
+        ref={navbarWrapperRef} 
+        className="fixed top-0 left-0 w-full z-50 pointer-events-none"
       >
-        {/* Simple & Clean Retro TV in the Dead Center */}
-        <div 
-          ref={tvFrameRef}
-          className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none select-none px-4"
-        >
-          {/* Simple Top Handle */}
-          <div className="w-14 h-3 border-2 border-b-0 border-primary bg-neutral-800 rounded-t-md mx-auto" />
+        <Navbar />
+      </div>
 
-          {/* Simple TV Cabinet */}
-          <div className="bg-[#1c1c1c] p-3 sm:p-5 rounded-2xl border-4 border-primary shadow-[10px_10px_0px_0px_rgba(17,17,17,1)] flex gap-3 sm:gap-5 items-center">
-            {/* TV Screen: Displays User's Logo and the Newspaper Headline inside */}
-            <div className="w-[280px] sm:w-[440px] md:w-[540px] aspect-[16/10] rounded-xl border-2 border-neutral-700 bg-white relative overflow-hidden shadow-inner flex flex-col items-center justify-between p-4">
+      {/* Centered Modern Television, Stand & Shadows (Behind the emerging paper, z-10) */}
+      <div 
+        ref={tvFrameRef}
+        className="fixed inset-0 flex flex-col items-center justify-center z-10 pointer-events-none select-none px-4"
+      >
+        <div className="flex flex-col items-center">
+          
+          {/* Modern Slim Bezel TV Frame */}
+          <div className="bg-[#0c0c0c] p-1.5 sm:p-2 rounded-xl border border-neutral-700/80 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.08)] flex flex-col items-center">
+            
+            {/* Modern 16:9 Widescreen OLED Display - Pure Black OLED Base */}
+            <div className="w-[320px] sm:w-[500px] md:w-[640px] lg:w-[740px] aspect-[16/9] rounded-lg bg-black relative overflow-hidden shadow-inner flex flex-col border border-neutral-800">
               
-              {/* User Logo in place of channel logo */}
-              <div className="w-full flex justify-between items-center border-b border-primary/20 pb-2">
-                <img src={logo} alt="Logo" className="h-6 sm:h-7 w-auto grayscale contrast-125" />
-                <span className="mono-data text-[0.55rem] font-black text-accent uppercase">
-                  ● SPECIAL BROADCAST
-                </span>
+              {/* Pure Black Screen Base (The newspaper sits directly in front of this, leaving it black when thrown out!) */}
+              <div className="absolute inset-0 bg-[#060606] flex items-center justify-center pointer-events-none">
+                <div className="w-56 h-56 rounded-full bg-neutral-900/30 blur-3xl pointer-events-none" />
               </div>
 
-              {/* Newspaper inside the center of the TV */}
-              <div className="text-center my-auto px-2">
-                <span className="uppercase-label text-accent font-black text-[0.55rem] block mb-1">
-                  BREAKING NEWS
-                </span>
-                <h3 className="headline-serif text-lg sm:text-2xl font-black uppercase leading-tight text-primary">
-                  Transforming The Way <br /> Your Ideas Work
-                </h3>
-                <p className="mono-data text-[0.5rem] font-bold text-muted-text mt-1 uppercase">
-                  Abhay Kumar Das // Full-Stack
-                </p>
-              </div>
-
-              {/* Bottom Screen Bar */}
-              <div className="w-full border-t border-primary/20 pt-1.5 flex justify-between text-[0.5rem] mono-data font-bold text-muted-text">
-                <span>EDITION 2026</span>
-                <span className="text-primary font-black uppercase">SCROLL TO READ</span>
-              </div>
-
-              {/* Scanline CRT overlay */}
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.12)_50%)] bg-[length:100%_4px] pointer-events-none z-20" />
-              {/* Animated Moving Cathode Scan Beam */}
+              {/* Modern TV Screen Glare & Subtle Scanlines */}
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.06)_50%)] bg-[length:100%_4px] pointer-events-none z-20" />
               <div className="absolute inset-0 pointer-events-none overflow-hidden z-20">
-                <div className="absolute left-0 right-0 h-14 bg-gradient-to-b from-transparent via-black/10 via-primary/15 to-transparent animate-tv-scan border-b border-primary/20 pointer-events-none" />
+                <div className="absolute left-0 right-0 h-14 bg-gradient-to-b from-transparent via-black/8 via-primary/10 to-transparent animate-tv-scan border-b border-primary/15 pointer-events-none" />
               </div>
-              {/* Glass Glare */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-20 rounded-xl" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-20 rounded-lg" />
             </div>
 
-            {/* Simple Control Strip */}
-            <div className="flex flex-col justify-around h-[160px] sm:h-[240px] md:h-[300px] w-10 sm:w-12 border-l border-neutral-700 pl-2 sm:pl-3">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full border-2 border-primary bg-neutral-800 shadow flex items-center justify-center">
-                <div className="w-1 h-2.5 bg-accent rounded-full -mt-1.5" />
-              </div>
-              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 border-primary bg-neutral-800 shadow flex items-center justify-center">
-                <div className="w-0.5 h-2 bg-neutral-300 rounded-full -mt-1" />
-              </div>
-              <div className="flex items-center gap-1 mt-auto">
-                <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
-                <span className="mono-data text-[0.45rem] font-bold text-neutral-400">ON</span>
+            {/* Modern Slim Chin with Standby LED */}
+            <div className="w-full flex items-center justify-center pt-1">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_6px_rgba(204,0,0,0.9)]" />
+                <span className="mono-data text-[0.45rem] font-bold text-neutral-400 tracking-wider">SMART OLED</span>
               </div>
             </div>
           </div>
 
-          {/* Simple Stand Legs */}
-          <div className="flex justify-between w-44 sm:w-72 md:w-80 px-6">
-            <div className="w-3 h-4 bg-primary -rotate-20 rounded-b shadow" />
-            <div className="w-3 h-4 bg-primary rotate-20 rounded-b shadow" />
-          </div>
-        </div>
+          {/* Modern Minimalist TV Stand */}
+          {/* Vertical Neck */}
+          <div className="w-12 h-3.5 bg-gradient-to-b from-neutral-800 to-neutral-950 border-x border-neutral-700 mx-auto" />
+          {/* Base Plate */}
+          <div className="w-48 sm:w-64 md:w-72 h-2 bg-gradient-to-b from-neutral-700 via-neutral-800 to-neutral-950 rounded-sm shadow-md border-t border-neutral-600 mx-auto" />
 
-        {/* The Full Newspaper (Navbar + Hero): Throws out with the 360 turn animation! */}
-        <div
-          ref={newspaperRef}
-          className="w-full origin-center will-change-transform z-30"
-          style={{ 
-            transformStyle: "preserve-3d", 
-            opacity: hasLanded ? 1 : 0 
-          }}
-        >
-          <Navbar />
-          <Hero />
-        </div>
+          {/* Modern Ambient Soft Floor Shadow */}
+          <div className="w-60 sm:w-80 md:w-[500px] h-4 bg-black/30 blur-md rounded-full mx-auto mt-1 pointer-events-none" />
 
-        {/* Retro TV Remote Control */}
-        {!loading && !hasLanded && (
+          {/* Modern Minimalist Remote Control Below TV */}
           <div 
             ref={indicatorRef}
-            className="absolute bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center select-none cursor-pointer"
-            onClick={() => executeThrowRef.current?.()}
+            className="pointer-events-auto cursor-pointer mt-3 sm:mt-4 transition-transform hover:scale-[1.02]"
+            onClick={handleRemoteClick}
           >
-            {/* Remote Body */}
-            <div className="bg-[#181818] border-2 border-primary rounded-2xl p-2.5 sm:p-3 shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] flex flex-col items-center gap-2 w-64 sm:w-72 transition-transform hover:scale-[1.02]">
-              
-              {/* IR Emitter / Header */}
+            <div className="bg-[#151515] border border-neutral-700/80 rounded-2xl p-2.5 sm:p-3 shadow-[0_15px_30px_rgba(0,0,0,0.4)] flex flex-col items-center gap-2 w-64 sm:w-72">
+              {/* Header */}
               <div className="flex items-center justify-between w-full px-1">
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
                   <span className="mono-data text-[0.52rem] font-bold text-neutral-400 uppercase tracking-widest">
-                    REMOTE CONTROL
+                    SMART REMOTE
                   </span>
                 </div>
                 <div className="w-3.5 h-1.5 bg-neutral-600 rounded-full" />
               </div>
 
-              {/* Remote Screen with "SCROLL TO SEE FULL ARTICLE" */}
-              <div className="w-full bg-[#0d0d0d] border border-neutral-700 rounded-lg py-1.5 px-2.5 flex items-center justify-center gap-2 shadow-inner">
+              {/* Display */}
+              <div className="w-full bg-[#0a0a0a] border border-neutral-700 rounded-lg py-1.5 px-2.5 flex items-center justify-center gap-2 shadow-inner">
                 <span className="uppercase-label text-[0.58rem] sm:text-[0.64rem] font-black tracking-wider text-accent text-center leading-none">
                   SCROLL TO SEE FULL ARTICLE
                 </span>
@@ -270,9 +307,8 @@ function App() {
                 </span>
               </div>
 
-              {/* Tactile Remote Buttons Section */}
+              {/* Buttons */}
               <div className="w-full flex items-center justify-between px-2 pt-0.5 border-t border-neutral-800">
-                {/* D-Pad Buttons */}
                 <div className="flex items-center gap-1">
                   <span className="w-5 h-5 rounded bg-neutral-800 border border-neutral-600 flex items-center justify-center text-[0.55rem] text-neutral-300 font-bold shadow-sm">
                     ▲
@@ -281,27 +317,36 @@ function App() {
                     ▼
                   </span>
                 </div>
-
-                {/* Number Keypad */}
-                <div className="grid grid-cols-3 gap-1">
-                  {[1, 2, 3, 4, 5, 6].map((num) => (
-                    <span 
-                      key={num}
-                      className="w-3.5 h-2 rounded-sm bg-neutral-700/80 text-[0.45rem] font-mono text-neutral-400 flex items-center justify-center"
-                    >
-                      {num}
-                    </span>
-                  ))}
+                <div className="flex gap-1.5 items-center">
+                  <span className="w-2 h-2 rounded-full bg-neutral-600" />
+                  <span className="w-2 h-2 rounded-full bg-neutral-600" />
+                  <span className="w-2 h-2 rounded-full bg-neutral-600" />
                 </div>
-
-                {/* Power / Action Button */}
                 <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-accent/90 border border-red-500 shadow-inner flex items-center justify-center">
                   <span className="text-white text-[0.55rem] font-black">⏻</span>
                 </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      </div>
+
+      {/* Hero / Throw Stage - centered in viewport while pinned */}
+      <div 
+        ref={stageRef}
+        className="relative bg-transparent overflow-hidden min-h-screen w-full flex items-center justify-center z-30 pointer-events-none"
+        style={{ perspective: "1200px" }}
+      >
+        {/* The Newspaper Broadside: Starts inside the TV screen, then rotates 360° OUT of the TV screen towards the user! */}
+        <div
+          ref={newspaperRef}
+          className="w-full max-w-5xl mx-auto will-change-transform z-40 pointer-events-auto bg-background border-2 border-primary shadow-[0_20px_50px_rgba(0,0,0,0.35)] rounded-sm"
+          style={{ 
+            transformStyle: "preserve-3d" 
+          }}
+        >
+          <Hero />
+        </div>
       </div>
 
       <About />

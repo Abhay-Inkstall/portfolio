@@ -10,9 +10,35 @@ const Footer = ({ isSepia, setIsSepia }) => {
 
   return (
     <footer className="bg-background pt-0 pb-6 relative overflow-hidden transition-colors duration-700">
-      {/* Pre-Footer CTA Section - Full Width Editorial Style */}
-      <div className="bg-primary text-background py-16 md:py-24 mb-10 border-y-8 border-primary">
-        <div className="container mx-auto px-4 flex flex-col items-center text-center">
+      {/* Pre-Footer CTA Section - Full Width Editorial Style with Rich Background Animation */}
+      <div className="bg-primary text-background py-16 md:py-24 mb-10 border-y-8 border-primary relative overflow-hidden">
+        {/* Animated Background Ambience */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-accent/20 rounded-full blur-[120px] pointer-events-none animate-pulse" />
+        <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-white/10 rounded-full blur-[100px] pointer-events-none animate-pulse [animation-delay:1.5s]" />
+
+        {/* Animated Newsprint Dot Grid Overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.12)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40" />
+
+        {/* Animated Dual Typographic Marquee Ribbons */}
+        <div className="absolute inset-0 flex flex-col justify-around pointer-events-none select-none opacity-[0.06] overflow-hidden">
+          <div className="flex animate-marquee whitespace-nowrap text-6xl md:text-8xl font-black headline-serif uppercase tracking-widest text-background">
+            {[...Array(6)].map((_, i) => (
+              <span key={i} className="mx-6">
+                TRANSFORM • INNOVATE • SCALE • ARCHITECTURE • FULLSTACK • 
+              </span>
+            ))}
+          </div>
+          <div className="flex animate-marquee-reverse whitespace-nowrap text-6xl md:text-8xl font-black headline-serif uppercase tracking-widest text-background">
+            {[...Array(6)].map((_, i) => (
+              <span key={i} className="mx-6">
+                EDITORIAL VISION • ENTERPRISE SOLUTIONS • MODERN WEB • 2026 • 
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Foreground Content */}
+        <div className="container mx-auto px-4 flex flex-col items-center text-center relative z-10">
           <h2 className="headline-serif text-4xl md:text-8xl font-black mb-8 leading-none max-w-5xl tracking-tighter">
             Ready to transform your workflow?
           </h2>
