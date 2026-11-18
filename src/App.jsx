@@ -10,7 +10,6 @@ import Experience from "./components/Experience";
 import Skills from "./components/Skills";
 import EditorialProcess from "./components/EditorialProcess";
 import FAQ from "./components/FAQ";
-import logo from "./assets/logoBlack.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -24,7 +23,10 @@ function App() {
   const stageRef = useRef(null);
   const newspaperRef = useRef(null);
   const tvFrameRef = useRef(null);
+  const tvScreenRef = useRef(null);
+  const mobileScreenRef = useRef(null);
   const indicatorRef = useRef(null);
+  const mobileIndicatorRef = useRef(null);
   const navbarWrapperRef = useRef(null);
 
   useEffect(() => {
@@ -51,9 +53,19 @@ function App() {
   const getInitialScale = () => {
     if (typeof window === "undefined") return 0.52;
     const w = window.innerWidth;
-    if (w < 640) return 0.28;
-    if (w < 1024) return 0.40;
-    return 0.52;
+    const isMobile = w < 768;
+    const screenEl = isMobile ? mobileScreenRef.current : tvScreenRef.current;
+    const fullWidth = newspaperRef.current?.offsetWidth || w;
+
+    if (screenEl && screenEl.offsetWidth > 0 && fullWidth > 0) {
+      const scaleX = (screenEl.offsetWidth * 0.94) / fullWidth;
+      return Math.min(scaleX, isMobile ? 0.65 : 0.60);
+    }
+
+    if (w < 480) return 0.32;
+    if (w < 768) return 0.40;
+    if (w < 1024) return 0.48;
+    return 0.54;
   };
 
   useLayoutEffect(() => {
@@ -64,7 +76,7 @@ function App() {
     const ctx = gsap.context(() => {
       const initialScale = getInitialScale();
 
-      // Initial state: newspaper starts directly inside the TV screen frame, right side up, sharp and visible!
+      // Initial state: newspaper starts directly inside the TV/Mobile screen frame, right side up, sharp and visible!
       gsap.set(newspaperRef.current, {
         scale: initialScale,
         rotation: 0,
@@ -97,6 +109,9 @@ function App() {
             if (indicatorRef.current) {
               indicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
             }
+            if (mobileIndicatorRef.current) {
+              mobileIndicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
+            }
             if (tvFrameRef.current) {
               tvFrameRef.current.style.visibility = self.progress > 0.75 ? "hidden" : "visible";
             }
@@ -107,13 +122,13 @@ function App() {
         },
       });
 
-      // 1. Remote control slides down and fades out (0% - 15%)
+      // 1. Remote control / Mobile hint slides down and fades out (0% - 15%)
       if (indicatorRef.current) {
         tl.to(
           indicatorRef.current,
           {
             opacity: 0,
-            y: 30,
+            y: 25,
             scale: 0.94,
             ease: "power1.out",
             duration: 0.15,
@@ -122,8 +137,22 @@ function App() {
         );
       }
 
-      // 2. The Newspaper rotates 360° OUT OF the TV screen directly to the user's screen!
-      // Scales from TV screen size (initialScale) to full viewport (1.0), while doing a 360° 3D spin!
+      if (mobileIndicatorRef.current) {
+        tl.to(
+          mobileIndicatorRef.current,
+          {
+            opacity: 0,
+            y: 25,
+            scale: 0.94,
+            ease: "power1.out",
+            duration: 0.15,
+          },
+          0
+        );
+      }
+
+      // 2. The Newspaper rotates 360° OUT OF the TV / Smartphone screen directly to the user's screen!
+      // Scales from Device screen size (initialScale) to full viewport width (1.0), while doing a 360° 3D spin!
       tl.to(
         newspaperRef.current,
         {
@@ -143,8 +172,8 @@ function App() {
           rotateY: 0,
         },
         {
-          rotateX: 24,
-          rotateY: -18,
+          rotateX: 22,
+          rotateY: -16,
           duration: 0.40,
           yoyo: true,
           repeat: 1,
@@ -153,7 +182,7 @@ function App() {
         0.05
       );
 
-      // 3. As the newspaper lifts out of the TV screen, the TV behind it (displaying its black screen!) recedes
+      // 3. As the newspaper lifts out of the screen, the TV/Phone behind it recedes into black
       tl.to(
         tvFrameRef.current,
         {
@@ -170,7 +199,7 @@ function App() {
         newspaperRef.current,
         {
           y: -10,
-          scale: 1.012,
+          scale: 1.01,
           duration: 0.06,
           ease: "power2.out",
         },
@@ -187,7 +216,18 @@ function App() {
         0.92
       );
 
-      // 5. Sticky Navbar docks into place smoothly (78% - 98%)
+      // 5. Fade out flying 3D box shadow as it flushes flat into the page flow
+      tl.to(
+        newspaperRef.current,
+        {
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
+          duration: 0.12,
+          ease: "power1.out",
+        },
+        0.88
+      );
+
+      // 6. Sticky Navbar docks into place smoothly (78% - 98%)
       if (navbarWrapperRef.current) {
         tl.to(
           navbarWrapperRef.current,
@@ -210,7 +250,17 @@ function App() {
       ScrollTrigger.refresh();
     }, 200);
 
+    const handleResize = () => {
+      if (window.scrollY < 50) {
+        const newScale = getInitialScale();
+        gsap.set(newspaperRef.current, { scale: newScale });
+      }
+      ScrollTrigger.refresh();
+    };
+    window.addEventListener("resize", handleResize);
+
     return () => {
+      window.removeEventListener("resize", handleResize);
       clearTimeout(refreshTimer);
       ctx.revert();
     };
@@ -235,20 +285,79 @@ function App() {
         <Navbar />
       </div>
 
-      {/* Centered Modern Television, Stand & Shadows (Behind the emerging paper, z-10) */}
+      {/* Centered Device Stage: Modern Smartphone on Mobile (< 768px), Modern Smart TV on Desktop/Tablet (>= 768px) */}
       <div 
         ref={tvFrameRef}
         className="fixed inset-0 flex flex-col items-center justify-center z-10 pointer-events-none select-none px-4"
       >
-        <div className="flex flex-col items-center">
-          
+        {/* ========================================================================= */}
+        {/* MOBILE SMARTPHONE DEVICE FRAME (< 768px screens)                         */}
+        {/* ========================================================================= */}
+        <div className="md:hidden flex flex-col items-center justify-center w-full">
+          {/* Smartphone Chassis */}
+          <div className="w-[min(78vw,280px)] aspect-[9/18.5] max-h-[58vh] bg-[#0c0c0c] rounded-[44px] p-2 border-[4px] border-neutral-700/90 shadow-[0_25px_60px_-10px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.12)] relative flex flex-col items-center justify-between">
+            {/* Left Volume Button Notches */}
+            <div className="absolute -left-[6px] top-16 w-[3px] h-7 bg-neutral-600 rounded-l-sm" />
+            <div className="absolute -left-[6px] top-26 w-[3px] h-7 bg-neutral-600 rounded-l-sm" />
+            {/* Right Power Button Notch */}
+            <div className="absolute -right-[6px] top-20 w-[3px] h-10 bg-neutral-600 rounded-r-sm" />
+
+            {/* Smartphone Display Screen (Pure Black OLED Base) */}
+            <div 
+              ref={mobileScreenRef}
+              className="w-full h-full rounded-[36px] bg-[#060606] border border-neutral-800 relative overflow-hidden flex flex-col items-center justify-between shadow-inner"
+            >
+              {/* Dynamic Island Pill */}
+              <div className="w-22 h-4.5 bg-black rounded-full mt-2 z-30 flex items-center justify-between px-2.5 shadow-sm border border-neutral-800/80">
+                <div className="w-2 h-2 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center">
+                  <div className="w-1 h-1 rounded-full bg-blue-900/60" />
+                </div>
+                <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
+              </div>
+
+              {/* Ambient Glass Reflections & Subtle Scanlines */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-20 rounded-[36px]" />
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.06)_50%)] bg-[length:100%_4px] pointer-events-none z-20" />
+
+              {/* Bottom Home Indicator Bar */}
+              <div className="w-24 h-1 bg-neutral-500/80 rounded-full mb-1.5 z-30" />
+            </div>
+          </div>
+
+          {/* Smartphone Soft Floor Shadow */}
+          <div className="w-44 h-3 bg-black/40 blur-md rounded-full mx-auto mt-2 pointer-events-none" />
+
+          {/* Mobile Scroll Indicator Pill */}
+          <div 
+            ref={mobileIndicatorRef}
+            className="pointer-events-auto cursor-pointer mt-3 transition-transform hover:scale-[1.03] active:scale-95"
+            onClick={handleRemoteClick}
+          >
+            <div className="bg-[#141414] border border-neutral-700/80 rounded-full py-1.5 px-4 shadow-[0_12px_24px_rgba(0,0,0,0.5)] flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+              <span className="uppercase-label text-[0.6rem] font-black tracking-wider text-accent leading-none">
+                SCROLL TO READ FULL ARTICLE
+              </span>
+              <span className="text-white text-xs font-black animate-bounce leading-none">
+                ↓
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================================= */}
+        {/* DESKTOP & TABLET MODERN SMART TV FRAME (>= 768px screens)                 */}
+        {/* ========================================================================= */}
+        <div className="hidden md:flex flex-col items-center">
           {/* Modern Slim Bezel TV Frame */}
-          <div className="bg-[#0c0c0c] p-1.5 sm:p-2 rounded-xl border border-neutral-700/80 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.08)] flex flex-col items-center">
+          <div className="bg-[#0c0c0c] p-2 rounded-xl border border-neutral-700/80 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.08)] flex flex-col items-center">
             
-            {/* Modern 16:9 Widescreen OLED Display - Pure Black OLED Base */}
-            <div className="w-[320px] sm:w-[500px] md:w-[640px] lg:w-[740px] aspect-[16/9] rounded-lg bg-black relative overflow-hidden shadow-inner flex flex-col border border-neutral-800">
-              
-              {/* Pure Black Screen Base (The newspaper sits directly in front of this, leaving it black when thrown out!) */}
+            {/* Modern 16:9 Widescreen OLED Display */}
+            <div 
+              ref={tvScreenRef}
+              className="w-[min(88vw,680px)] lg:w-[min(80vw,760px)] xl:w-[840px] aspect-[16/9] max-h-[56vh] rounded-lg bg-black relative overflow-hidden shadow-inner flex flex-col border border-neutral-800"
+            >
+              {/* Pure Black Screen Base */}
               <div className="absolute inset-0 bg-[#060606] flex items-center justify-center pointer-events-none">
                 <div className="w-56 h-56 rounded-full bg-neutral-900/30 blur-3xl pointer-events-none" />
               </div>
@@ -262,27 +371,25 @@ function App() {
             </div>
 
             {/* Modern Slim Chin with Standby LED */}
-            <div className="w-full flex items-center justify-center pt-1">
+            <div className="w-full flex items-center justify-center pt-1.5">
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_6px_rgba(204,0,0,0.9)]" />
-                <span className="mono-data text-[0.45rem] font-bold text-neutral-400 tracking-wider">SMART OLED</span>
+                <span className="mono-data text-[0.48rem] font-bold text-neutral-400 tracking-wider">SMART OLED</span>
               </div>
             </div>
           </div>
 
           {/* Modern Minimalist TV Stand */}
-          {/* Vertical Neck */}
-          <div className="w-12 h-3.5 bg-gradient-to-b from-neutral-800 to-neutral-950 border-x border-neutral-700 mx-auto" />
-          {/* Base Plate */}
-          <div className="w-48 sm:w-64 md:w-72 h-2 bg-gradient-to-b from-neutral-700 via-neutral-800 to-neutral-950 rounded-sm shadow-md border-t border-neutral-600 mx-auto" />
+          <div className="w-14 h-3.5 bg-gradient-to-b from-neutral-800 to-neutral-950 border-x border-neutral-700 mx-auto" />
+          <div className="w-56 sm:w-64 md:w-80 h-2 bg-gradient-to-b from-neutral-700 via-neutral-800 to-neutral-950 rounded-sm shadow-md border-t border-neutral-600 mx-auto" />
 
           {/* Modern Ambient Soft Floor Shadow */}
-          <div className="w-60 sm:w-80 md:w-[500px] h-4 bg-black/30 blur-md rounded-full mx-auto mt-1 pointer-events-none" />
+          <div className="w-72 sm:w-96 md:w-[560px] h-4 bg-black/35 blur-md rounded-full mx-auto mt-1 pointer-events-none" />
 
           {/* Modern Minimalist Remote Control Below TV */}
           <div 
             ref={indicatorRef}
-            className="pointer-events-auto cursor-pointer mt-3 sm:mt-4 transition-transform hover:scale-[1.02]"
+            className="pointer-events-auto cursor-pointer mt-3 transition-transform hover:scale-[1.02]"
             onClick={handleRemoteClick}
           >
             <div className="bg-[#151515] border border-neutral-700/80 rounded-2xl p-2.5 sm:p-3 shadow-[0_15px_30px_rgba(0,0,0,0.4)] flex flex-col items-center gap-2 w-64 sm:w-72">
@@ -337,10 +444,10 @@ function App() {
         className="relative bg-transparent overflow-hidden min-h-screen w-full flex items-center justify-center z-30 pointer-events-none"
         style={{ perspective: "1200px" }}
       >
-        {/* The Newspaper Broadside: Starts inside the TV screen, then rotates 360° OUT of the TV screen towards the user! */}
+        {/* The Newspaper Broadside: Full width section matching all other sections, rotating 360° OUT of the TV/Phone screen towards the user! */}
         <div
           ref={newspaperRef}
-          className="w-full max-w-5xl mx-auto will-change-transform z-40 pointer-events-auto bg-background border-2 border-primary shadow-[0_20px_50px_rgba(0,0,0,0.35)] rounded-sm"
+          className="w-full will-change-transform z-40 pointer-events-auto bg-background border-b-4 border-primary shadow-[0_25px_60px_rgba(0,0,0,0.35)]"
           style={{ 
             transformStyle: "preserve-3d" 
           }}
