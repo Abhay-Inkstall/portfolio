@@ -125,82 +125,161 @@ const Skills = () => {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Header Animation
-      gsap.fromTo(
-        ".skills-title",
-        { y: 35, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power3.out",
+      const mm = gsap.matchMedia();
+
+      // =========================================================================
+      // DESKTOP & TABLET (>= 1024px): Pinned Corkboard Animation with Scrub
+      // Locks screen and pins each 3D pushpin card sequentially onto the board!
+      // =========================================================================
+      mm.add("(min-width: 1024px)", () => {
+        const cards = cardsRef.current.filter(Boolean);
+        const pins = pinsRef.current.filter(Boolean);
+
+        const tl = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
-            start: "top 80%",
-            toggleActions: "play none none none",
+            start: "top top",
+            end: "+=1200",
+            pin: true,
+            scrub: 1, // Smooth scrub forward and backwards
+            anticipatePin: 1,
             refreshPriority: 6,
           },
-        }
-      );
+        });
 
-      const cards = cardsRef.current.filter(Boolean);
-      const pins = pinsRef.current.filter(Boolean);
+        // Title reveals at start of pin
+        tl.fromTo(
+          ".skills-title",
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.15, ease: "power2.out" },
+          0
+        );
 
-      // Clean, rock-solid stagger reveal: Cards pop into place and STAY visible!
-      // No artificial 2000px pin lock, no blank-screen threshold hacks, no row jumps
-      cards.forEach((card, idx) => {
-        const pin = pins[idx];
-        const targetAngle = skillCategories[idx]?.angle || 0;
+        // Sequentially pin each card and pushpin onto the broadsheet corkboard!
+        cards.forEach((card, idx) => {
+          const pin = pins[idx];
+          const targetAngle = skillCategories[idx]?.angle || 0;
+          const startTime = 0.08 + idx * 0.13;
 
+          // Card pops onto the bulletin board with tilt angle
+          tl.fromTo(
+            card,
+            {
+              scale: 0.25,
+              opacity: 0,
+              y: -25,
+              rotation: 0,
+            },
+            {
+              scale: 1,
+              opacity: 1,
+              y: 0,
+              rotation: targetAngle,
+              duration: 0.18,
+              ease: "back.out(1.8)",
+            },
+            startTime
+          );
+
+          // 3D Pushpin drops down and pierces the card!
+          if (pin) {
+            tl.fromTo(
+              pin,
+              {
+                scale: 0,
+                y: -18,
+                opacity: 0,
+              },
+              {
+                scale: 1,
+                y: 0,
+                opacity: 1,
+                duration: 0.12,
+                ease: "bounce.out",
+              },
+              startTime + 0.04
+            );
+          }
+        });
+
+        // Hold all 6 cards visible at the end of the pin before smooth transition to Projects
+        tl.to({}, { duration: 0.14 });
+      });
+
+      // =========================================================================
+      // MOBILE (< 1024px): Natural scroll stagger reveal without pin-hijacking
+      // =========================================================================
+      mm.add("(max-width: 1023px)", () => {
         gsap.fromTo(
-          card,
+          ".skills-title",
+          { y: 30, opacity: 0 },
           {
-            opacity: 0,
-            y: 40,
-            scale: 0.92,
-            rotation: 0,
-          },
-          {
-            opacity: 1,
             y: 0,
-            scale: 1,
-            rotation: targetAngle,
-            duration: 0.65,
-            delay: idx * 0.08,
-            ease: "back.out(1.8)",
+            opacity: 1,
+            duration: 0.7,
+            ease: "power3.out",
             scrollTrigger: {
-              trigger: ".skills-grid",
-              start: "top 82%",
+              trigger: containerRef.current,
+              start: "top 85%",
               toggleActions: "play none none none",
               refreshPriority: 6,
             },
           }
         );
 
-        if (pin) {
+        const cards = cardsRef.current.filter(Boolean);
+        const pins = pinsRef.current.filter(Boolean);
+
+        cards.forEach((card, idx) => {
+          const pin = pins[idx];
+          const targetAngle = skillCategories[idx]?.angle || 0;
+
           gsap.fromTo(
-            pin,
+            card,
             {
-              scale: 0,
-              y: -15,
               opacity: 0,
+              y: 35,
+              scale: 0.9,
+              rotation: 0,
             },
             {
-              scale: 1,
-              y: 0,
               opacity: 1,
-              duration: 0.45,
-              delay: idx * 0.08 + 0.12,
-              ease: "bounce.out",
+              y: 0,
+              scale: 1,
+              rotation: targetAngle,
+              duration: 0.6,
+              delay: (idx % 2) * 0.1,
+              ease: "back.out(1.8)",
               scrollTrigger: {
-                trigger: ".skills-grid",
-                start: "top 82%",
+                trigger: card,
+                start: "top 88%",
                 toggleActions: "play none none none",
                 refreshPriority: 6,
               },
             }
           );
-        }
+
+          if (pin) {
+            gsap.fromTo(
+              pin,
+              { scale: 0, y: -15, opacity: 0 },
+              {
+                scale: 1,
+                y: 0,
+                opacity: 1,
+                duration: 0.4,
+                delay: (idx % 2) * 0.1 + 0.1,
+                ease: "bounce.out",
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top 88%",
+                  toggleActions: "play none none none",
+                  refreshPriority: 6,
+                },
+              }
+            );
+          }
+        });
       });
     }, containerRef);
 
@@ -211,26 +290,31 @@ const Skills = () => {
     <section 
       id="skills" 
       ref={containerRef} 
-      className="py-16 md:py-24 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
+      className="min-h-screen flex flex-col justify-center py-12 md:py-16 bg-background border-b-4 border-primary relative overflow-hidden bg-news-dots"
     >
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
-        <div className="flex justify-between items-end border-b-2 border-primary pb-3 mb-10 skills-title">
-          <h2 className="headline-serif text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary">
-            Technical Specs
-          </h2>
+        <div className="flex justify-between items-end border-b-2 border-primary pb-3 mb-8 md:mb-10 skills-title">
+          <div className="flex items-center gap-3">
+            <h2 className="headline-serif text-3xl md:text-5xl font-black uppercase tracking-tighter text-primary">
+              Technical Specs
+            </h2>
+            <span className="hidden sm:inline-block px-2.5 py-0.5 bg-accent text-background uppercase-label text-[0.6rem] font-black">
+              PINNED BOARD
+            </span>
+          </div>
           <span className="uppercase-label text-muted-text hidden md:block underline font-black">
             EDITORIAL INVENTORY // 6 CORE DIVISIONS
           </span>
         </div>
 
         {/* 6 Skill Categories Grid */}
-        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-10 gap-x-8">
+        <div className="skills-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-8 lg:gap-y-10 gap-x-6 lg:gap-x-8">
           {skillCategories.map((category, idx) => (
             <div
               key={category.id}
               ref={(el) => (cardsRef.current[idx] = el)}
-              className="skill-card relative border-4 border-primary bg-white shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] flex flex-col pt-1 transition-transform duration-300 hover:scale-[1.02] hover:z-20"
+              className="skill-card relative border-4 border-primary bg-white shadow-[8px_8px_0px_0px_rgba(17,17,17,1)] flex flex-col pt-1 transition-transform duration-300 hover:scale-[1.02] hover:z-20 will-change-transform"
             >
               {/* Attached Authentic 3D Pushpin on Top */}
               <div ref={(el) => (pinsRef.current[idx] = el)}>
