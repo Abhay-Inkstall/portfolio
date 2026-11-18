@@ -10,6 +10,7 @@ import Experience from "./components/Experience";
 import Skills from "./components/Skills";
 import EditorialProcess from "./components/EditorialProcess";
 import FAQ from "./components/FAQ";
+import logo from "./assets/logoBlack.png";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -25,6 +26,8 @@ function App() {
   const tvFrameRef = useRef(null);
   const tvScreenRef = useRef(null);
   const mobileScreenRef = useRef(null);
+  const broadcastScreenRef = useRef(null);
+  const mobileBroadcastScreenRef = useRef(null);
   const indicatorRef = useRef(null);
   const mobileIndicatorRef = useRef(null);
   const navbarWrapperRef = useRef(null);
@@ -76,14 +79,22 @@ function App() {
     const ctx = gsap.context(() => {
       const initialScale = getInitialScale();
 
-      // Initial state: newspaper starts directly inside the TV/Mobile screen frame, right side up, sharp and visible!
+      // 1. Initial State:
+      // The TV/Phone Breaking News Broadcast Screen starts 100% visible
+      gsap.set([broadcastScreenRef.current, mobileBroadcastScreenRef.current], {
+        opacity: 1,
+        scale: 1,
+      });
+
+      // The Portfolio site starts inside the TV screen frame, but with OPACITY: 0
+      // so the user sees the TV Breaking News broadcast screen first!
       gsap.set(newspaperRef.current, {
         scale: initialScale,
         rotation: 0,
         rotateX: 0,
         rotateY: 0,
         z: 0,
-        opacity: 1,
+        opacity: 0,
         filter: "blur(0px)",
         transformOrigin: "50% 50%",
       });
@@ -96,15 +107,19 @@ function App() {
         });
       }
 
+      // Multi-stage Pinned Timeline:
+      // Stage 1: News broadcast displays inside TV
+      // Stage 2: On initial scroll, broadcast fades into the portfolio site inside TV
+      // Stage 3: On continued scroll, portfolio site rotates 360° OUT of the TV screen and lands in front
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: stageRef.current,
           start: "top top",
-          end: "+=1500",
+          end: "+=1800",
           pin: true,
-          scrub: 1, // Smooth scroll scrubbing
+          scrub: 1, // Smooth scrub forward and backwards
           anticipatePin: 1,
-          refreshPriority: 10, // Top priority: Calculate Hero pin spacer first!
+          refreshPriority: 10,
           onUpdate: (self) => {
             if (indicatorRef.current) {
               indicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
@@ -113,7 +128,7 @@ function App() {
               mobileIndicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
             }
             if (tvFrameRef.current) {
-              tvFrameRef.current.style.visibility = self.progress > 0.75 ? "hidden" : "visible";
+              tvFrameRef.current.style.visibility = self.progress > 0.78 ? "hidden" : "visible";
             }
             if (navbarWrapperRef.current) {
               navbarWrapperRef.current.style.pointerEvents = self.progress > 0.85 ? "auto" : "none";
@@ -122,7 +137,7 @@ function App() {
         },
       });
 
-      // 1. Remote control / Mobile hint slides down and fades out (0% - 15%)
+      // Step 1: Remote control & mobile scroll indicator slide down & fade out (0% - 15%)
       if (indicatorRef.current) {
         tl.to(
           indicatorRef.current,
@@ -131,7 +146,7 @@ function App() {
             y: 25,
             scale: 0.94,
             ease: "power1.out",
-            duration: 0.15,
+            duration: 0.12,
           },
           0
         );
@@ -145,26 +160,49 @@ function App() {
             y: 25,
             scale: 0.94,
             ease: "power1.out",
-            duration: 0.15,
+            duration: 0.12,
           },
           0
         );
       }
 
-      // 2. The Newspaper rotates 360° OUT OF the TV / Smartphone screen directly to the user's screen!
-      // Scales from Device screen size (initialScale) to full viewport width (1.0), while doing a 360° 3D spin!
+      // Step 2: "when a user scrolls then the site will display inside the screen of the tv"
+      // Breaking news broadcast screen crossfades into the actual portfolio site inside the TV!
+      tl.to(
+        [broadcastScreenRef.current, mobileBroadcastScreenRef.current],
+        {
+          opacity: 0,
+          scale: 0.96,
+          ease: "power2.inOut",
+          duration: 0.18,
+        },
+        0.04
+      );
+
+      tl.to(
+        newspaperRef.current,
+        {
+          opacity: 1,
+          ease: "power2.inOut",
+          duration: 0.18,
+        },
+        0.06
+      );
+
+      // Step 3: "and then on scroll behaviour one the site will come out of the TV screen and display in front"
+      // The site rotates 360° and throws OUT of the TV screen directly in front to full screen!
       tl.to(
         newspaperRef.current,
         {
           scale: 1,
           rotation: -360,
           ease: "power2.out",
-          duration: 0.82,
+          duration: 0.60,
         },
-        0.05
+        0.24
       );
 
-      // 3D perspective tilt dynamics as it flies through the air
+      // 3D perspective tilt as it flies through the air
       tl.fromTo(
         newspaperRef.current,
         {
@@ -174,27 +212,27 @@ function App() {
         {
           rotateX: 22,
           rotateY: -16,
-          duration: 0.40,
+          duration: 0.30,
           yoyo: true,
           repeat: 1,
           ease: "sine.inOut",
         },
-        0.05
+        0.24
       );
 
-      // 3. As the newspaper lifts out of the screen, the TV/Phone behind it recedes into black
+      // As the site lifts out of the TV, the TV behind it recedes into black
       tl.to(
         tvFrameRef.current,
         {
           opacity: 0,
           scale: 0.68,
           ease: "power2.inOut",
-          duration: 0.45,
+          duration: 0.38,
         },
-        0.20
+        0.30
       );
 
-      // 4. Physical paper slap bounce recoil as it lands on the screen (86% - 100%)
+      // Step 4: Paper recoil slap bounce as it lands flush on the screen (85% - 94%)
       tl.to(
         newspaperRef.current,
         {
@@ -203,7 +241,7 @@ function App() {
           duration: 0.06,
           ease: "power2.out",
         },
-        0.86
+        0.85
       );
       tl.to(
         newspaperRef.current,
@@ -213,21 +251,21 @@ function App() {
           duration: 0.06,
           ease: "power2.in",
         },
-        0.92
+        0.91
       );
 
-      // 5. Fade out flying 3D box shadow as it flushes flat into the page flow
+      // Box shadow flushes flat as it integrates into document flow
       tl.to(
         newspaperRef.current,
         {
           boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)",
-          duration: 0.12,
+          duration: 0.08,
           ease: "power1.out",
         },
         0.88
       );
 
-      // 6. Sticky Navbar docks into place smoothly (78% - 98%)
+      // Step 5: Sticky Navbar docks into place smoothly (78% - 98%)
       if (navbarWrapperRef.current) {
         tl.to(
           navbarWrapperRef.current,
@@ -268,7 +306,7 @@ function App() {
 
   const handleRemoteClick = () => {
     window.scrollTo({
-      top: 1500,
+      top: 1800,
       behavior: "smooth",
     });
   };
@@ -315,6 +353,57 @@ function App() {
                 <div className="w-1.5 h-1.5 rounded-full bg-neutral-900" />
               </div>
 
+              {/* The Mobile Breaking News Broadcast Screen (Initial State) */}
+              <div 
+                ref={mobileBroadcastScreenRef}
+                className="absolute inset-0 bg-[#fbf9f5] text-primary flex flex-col justify-between pt-9 pb-3.5 px-3 select-none z-10 will-change-transform"
+              >
+                {/* Top Tag */}
+                <div className="flex justify-between items-center border-b border-primary/20 pb-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <img src={logo} alt="Logo" className="h-3.5 w-auto grayscale contrast-125" />
+                    <span className="mono-data text-[0.48rem] font-black text-primary">LIVE // CH-01</span>
+                  </div>
+                  <span className="mono-data text-[0.48rem] font-black text-accent uppercase tracking-widest">• SPECIAL BROADCAST</span>
+                </div>
+
+                {/* Center Content */}
+                <div className="flex flex-col items-center text-center my-auto">
+                  <span className="uppercase-label text-accent font-black text-[0.55rem] tracking-widest mb-1 animate-pulse">
+                    BREAKING NEWS
+                  </span>
+                  <h2 className="headline-serif text-lg font-black uppercase tracking-tight text-primary leading-tight">
+                    TRANSFORMING THE WAY YOUR IDEAS WORK
+                  </h2>
+                  <p className="mono-data text-[0.5rem] font-bold text-neutral-600 tracking-wider mt-1 uppercase">
+                    ABHAY KUMAR DAS // FULL-STACK
+                  </p>
+                </div>
+
+                {/* Mobile News Ticker Strip (The 5 News Bulletins) */}
+                <div className="w-full bg-[#111111] text-background py-1 px-2 rounded flex items-center gap-1.5 overflow-hidden border border-neutral-700 shadow-sm mb-2">
+                  <span className="bg-accent text-white px-1 py-0.2 uppercase-label text-[0.45rem] font-black shrink-0">
+                    WIRE
+                  </span>
+                  <div className="overflow-hidden whitespace-nowrap flex-grow">
+                    <div className="flex animate-marquee text-[0.5rem] mono-data font-black uppercase tracking-wider text-neutral-200">
+                      <span className="mx-2">● [01] SCALABLE MERN & CLOUD</span>
+                      <span className="mx-2">● [02] 99.9% UPTIME S.L.A</span>
+                      <span className="mx-2">● [03] DOCKER & KUBERNETES</span>
+                      <span className="mx-2">● [04] 25+ SOLUTIONS DEPLOYED</span>
+                      <span className="mx-2">● [05] COLLABORATION 2026</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Bar */}
+                <div className="flex justify-between items-center text-[0.48rem] mono-data font-bold text-neutral-600 border-t border-primary/20 pt-1">
+                  <span>EDITION 2026</span>
+                  <span className="text-primary font-black uppercase tracking-wider">SCROLL TO READ ↓</span>
+                  <span className="text-accent font-black">● ON</span>
+                </div>
+              </div>
+
               {/* Ambient Glass Reflections & Subtle Scanlines */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none z-20 rounded-[36px]" />
               <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.06)_50%)] bg-[length:100%_4px] pointer-events-none z-20" />
@@ -357,9 +446,77 @@ function App() {
               ref={tvScreenRef}
               className="w-[min(88vw,680px)] lg:w-[min(80vw,760px)] xl:w-[840px] aspect-[16/9] max-h-[56vh] rounded-lg bg-black relative overflow-hidden shadow-inner flex flex-col border border-neutral-800"
             >
-              {/* Pure Black Screen Base */}
+              {/* Pure Black Screen Base (revealed when paper lifts out) */}
               <div className="absolute inset-0 bg-[#060606] flex items-center justify-center pointer-events-none">
                 <div className="w-56 h-56 rounded-full bg-neutral-900/30 blur-3xl pointer-events-none" />
+              </div>
+
+              {/* ========================================================================= */}
+              {/* The Breaking News Broadcast Screen (Initial State - Exact Match to Image 2) */}
+              {/* ========================================================================= */}
+              <div 
+                ref={broadcastScreenRef}
+                className="absolute inset-0 bg-[#fbf9f5] text-primary flex flex-col justify-between p-4 sm:p-5 select-none z-10 will-change-transform"
+              >
+                {/* Top Broadcast Masthead Bar */}
+                <div className="flex justify-between items-center border-b border-primary/20 pb-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full border border-primary/40 flex items-center justify-center p-0.5">
+                      <img src={logo} alt="Logo" className="h-4 w-auto grayscale contrast-125" />
+                    </div>
+                    <span className="mono-data text-[0.55rem] sm:text-xs font-black tracking-wider text-primary">
+                      SPECIAL BROADCAST // LIVE FEED
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                    <span className="mono-data text-[0.6rem] sm:text-xs font-black text-accent uppercase tracking-widest">
+                      • SPECIAL BROADCAST
+                    </span>
+                  </div>
+                </div>
+
+                {/* Center Main Breaking News Headline & Story */}
+                <div className="flex flex-col items-center justify-center text-center my-auto px-2">
+                  <span className="uppercase-label text-accent font-black text-[0.65rem] sm:text-xs tracking-[0.25em] mb-1.5 animate-pulse">
+                    BREAKING NEWS
+                  </span>
+                  <h1 className="headline-serif text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tight text-primary leading-tight max-w-xl mx-auto">
+                    TRANSFORMING THE WAY YOUR IDEAS WORK
+                  </h1>
+                  <p className="mono-data text-[0.58rem] sm:text-[0.68rem] font-bold text-neutral-600 tracking-wider mt-1.5 uppercase">
+                    ABHAY KUMAR DAS // FULL-STACK ARCHITECT
+                  </p>
+                </div>
+
+                {/* The 5 Headline Updates News Wire Strip */}
+                <div className="w-full bg-[#111111] text-background py-1.5 px-3 rounded flex items-center gap-2.5 overflow-hidden border border-neutral-700 shadow-sm mb-1">
+                  <div className="flex items-center gap-1.5 bg-accent text-white px-2 py-0.5 uppercase-label text-[0.52rem] sm:text-[0.6rem] font-black shrink-0 rounded-xs">
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    BULLETIN
+                  </div>
+                  <div className="overflow-hidden whitespace-nowrap flex-grow">
+                    <div className="flex animate-marquee text-[0.58rem] sm:text-[0.65rem] mono-data font-black uppercase tracking-wider text-neutral-200">
+                      <span className="mx-4">● [01] ARCHITECTING SCALABLE MERN & CLOUD SYSTEMS</span>
+                      <span className="mx-4">● [02] 99.9% UPTIME S.L.A ACROSS ENTERPRISE BUILDS</span>
+                      <span className="mx-4">● [03] MICROSERVICES ARCHITECTURE WITH DOCKER & K8S</span>
+                      <span className="mx-4">● [04] 25+ PRODUCTION DIGITAL SOLUTIONS DEPLOYED</span>
+                      <span className="mx-4">● [05] ACCEPTING SELECT ENGINEERING COLLABORATIONS</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom Bar: Edition, Scroll hint, Live status */}
+                <div className="flex justify-between items-center border-t border-primary/20 pt-1.5 text-[0.55rem] sm:text-[0.65rem] mono-data font-bold text-neutral-600">
+                  <span>EDITION 2026</span>
+                  <span className="text-primary font-black uppercase tracking-wider flex items-center gap-1">
+                    SCROLL TO READ <span className="animate-bounce">↓</span>
+                  </span>
+                  <div className="flex items-center gap-1 text-accent font-black">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                    <span>ON</span>
+                  </div>
+                </div>
               </div>
 
               {/* Modern TV Screen Glare & Subtle Scanlines */}
