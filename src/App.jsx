@@ -30,9 +30,30 @@ function App() {
   const mobileBroadcastScreenRef = useRef(null);
   const tvPageScreenRef = useRef(null);
   const mobilePageScreenRef = useRef(null);
-  const indicatorRef = useRef(null);
-  const mobileIndicatorRef = useRef(null);
   const navbarWrapperRef = useRef(null);
+
+  // 5 dynamic breaking news headlines changing smoothly every second
+  const headlines = [
+    "TRANSFORMING THE WAY YOUR IDEAS WORK",
+    "ENGINEERING SCALABLE FULL-STACK SYSTEMS",
+    "ARCHITECTING MODERN DIGITAL EXPERIENCES",
+    "TURNING COMPLEX LOGIC INTO ELEGANT CODE",
+    "DELIVERING HIGH-IMPACT WEB & CLOUD SOLUTIONS",
+  ];
+  const [headlineIndex, setHeadlineIndex] = useState(0);
+  const [headlineAnimState, setHeadlineAnimState] = useState("in");
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeadlineAnimState("out");
+      setTimeout(() => {
+        setHeadlineIndex((prev) => (prev + 1) % headlines.length);
+        setHeadlineAnimState("in");
+      }, 250);
+    }, 1300);
+
+    return () => clearInterval(interval);
+  }, [headlines.length]);
 
   useEffect(() => {
     if (isSepia) {
@@ -56,7 +77,7 @@ function App() {
   };
 
   const getInitialScale = () => {
-    if (typeof window === "undefined") return 0.50;
+    if (typeof window === "undefined") return 0.46;
     const w = window.innerWidth;
     const isMobile = w < 768;
     const screenEl = isMobile ? mobileScreenRef.current : tvScreenRef.current;
@@ -71,10 +92,10 @@ function App() {
       return Math.min(scaleX, scaleY);
     }
 
-    if (w < 480) return 0.30;
-    if (w < 768) return 0.38;
-    if (w < 1024) return 0.46;
-    return 0.52;
+    if (w < 480) return 0.28;
+    if (w < 768) return 0.35;
+    if (w < 1024) return 0.42;
+    return 0.46;
   };
 
   useLayoutEffect(() => {
@@ -121,7 +142,7 @@ function App() {
 
       // =========================================================================
       // Multi-Stage Smooth Scroll Timeline:
-      // Stage 1 (0% - 15%): Remote control slides down; TV displays Breaking News broadcast
+      // Stage 1 (0% - 10%): TV displays Breaking News broadcast with rotating headlines
       // Stage 2 (10% - 26%): Breaking news broadcast smoothly crossfades into portfolio page INSIDE the TV
       // Stage 3 (26% - 38%): Portfolio page rests proudly INSIDE the TV screen (0 spillage, perfectly contained)
       // Stage 4 (38% - 86%): TV screen goes black as page bursts 360° OUT of the TV screen towards viewer
@@ -137,12 +158,6 @@ function App() {
           anticipatePin: 1,
           refreshPriority: 10,
           onUpdate: (self) => {
-            if (indicatorRef.current) {
-              indicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
-            }
-            if (mobileIndicatorRef.current) {
-              mobileIndicatorRef.current.style.pointerEvents = self.progress > 0.08 ? "none" : "auto";
-            }
             if (tvFrameRef.current) {
               tvFrameRef.current.style.visibility = self.progress > 0.78 ? "hidden" : "visible";
             }
@@ -153,37 +168,7 @@ function App() {
         },
       });
 
-      // Step 1: Remote control & mobile scroll indicator slide down & fade out (0% - 14%)
-      if (indicatorRef.current) {
-        tl.to(
-          indicatorRef.current,
-          {
-            opacity: 0,
-            y: 25,
-            scale: 0.94,
-            ease: "power1.out",
-            duration: 0.12,
-          },
-          0
-        );
-      }
-
-      if (mobileIndicatorRef.current) {
-        tl.to(
-          mobileIndicatorRef.current,
-          {
-            opacity: 0,
-            y: 25,
-            scale: 0.94,
-            ease: "power1.out",
-            duration: 0.12,
-          },
-          0
-        );
-      }
-
-      // Step 2: "the page should first show inside the tv"
-      // Breaking news broadcast screen crossfades into the portfolio page INSIDE the TV!
+      // Step 1: Breaking news broadcast screen crossfades into the portfolio page INSIDE the TV!
       tl.to(
         [broadcastScreenRef.current, mobileBroadcastScreenRef.current],
         {
@@ -208,7 +193,7 @@ function App() {
 
       // (Between 0.26 and 0.38: The page rests proudly INSIDE the TV screen with zero spillage!)
 
-      // Step 3: "and then should come out of it then only it will be a smoother transition"
+      // Step 2: "and then should come out of it then only it will be a smoother transition"
       // The TV screen goes black OLED as the broadsheet newspaper launches OUT of the TV!
       tl.to(
         [tvPageScreenRef.current, mobilePageScreenRef.current],
@@ -280,7 +265,7 @@ function App() {
         0.40
       );
 
-      // Step 4: Paper recoil slap bounce as it lands flush on the screen (86% - 94%)
+      // Step 3: Paper recoil slap bounce as it lands flush on the screen (86% - 94%)
       tl.to(
         newspaperRef.current,
         {
@@ -313,7 +298,7 @@ function App() {
         0.89
       );
 
-      // Step 5: Sticky Navbar docks into place smoothly (82% - 98%)
+      // Step 4: Sticky Navbar docks into place smoothly (82% - 98%)
       if (navbarWrapperRef.current) {
         tl.to(
           navbarWrapperRef.current,
@@ -352,13 +337,6 @@ function App() {
     };
   }, [loading]);
 
-  const handleRemoteClick = () => {
-    window.scrollTo({
-      top: 2200,
-      behavior: "smooth",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-background bg-news-dots font-body transition-colors duration-700 overflow-x-clip">
       {loading && <Loader onComplete={handleLoaderComplete} />}
@@ -381,7 +359,7 @@ function App() {
         {/* ========================================================================= */}
         <div className="md:hidden flex flex-col items-center justify-center relative">
           {/* Smartphone Chassis - centered on screen */}
-          <div className="w-[min(82vw,300px)] aspect-[9/18.5] max-h-[62vh] bg-[#0c0c0c] rounded-[44px] p-2 border-[4px] border-neutral-700/90 shadow-[0_25px_60px_-10px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.12)] relative flex flex-col items-center justify-between z-10">
+          <div className="w-[min(80vw,280px)] aspect-[9/18.5] max-h-[60vh] bg-[#0c0c0c] rounded-[44px] p-2 border-[4px] border-neutral-700/90 shadow-[0_25px_60px_-10px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.12)] relative flex flex-col items-center justify-between z-10">
             {/* Left Volume Button Notches */}
             <div className="absolute -left-[6px] top-16 w-[3px] h-7 bg-neutral-600 rounded-l-sm" />
             <div className="absolute -left-[6px] top-26 w-[3px] h-7 bg-neutral-600 rounded-l-sm" />
@@ -409,7 +387,7 @@ function App() {
               {/* 1. Mobile Breaking News Broadcast Screen (Initial State) */}
               <div 
                 ref={mobileBroadcastScreenRef}
-                className="absolute inset-0 bg-[#fbf9f5] text-primary flex flex-col justify-between pt-9 pb-3.5 px-3 select-none z-10 will-change-transform"
+                className="absolute inset-0 bg-[#fbf9f5] text-primary flex flex-col justify-between pt-8 pb-3 px-3 select-none z-10 will-change-transform"
               >
                 {/* Top Tag */}
                 <div className="flex justify-between items-center border-b border-primary/20 pb-1.5">
@@ -420,33 +398,28 @@ function App() {
                   <span className="mono-data text-[0.48rem] font-black text-accent uppercase tracking-widest">• SPECIAL BROADCAST</span>
                 </div>
 
-                {/* Center Content */}
-                <div className="flex flex-col items-center text-center my-auto">
-                  <span className="uppercase-label text-accent font-black text-[0.55rem] tracking-widest mb-1 animate-pulse">
-                    BREAKING NEWS
-                  </span>
-                  <h2 className="headline-serif text-lg font-black uppercase tracking-tight text-primary leading-tight">
-                    TRANSFORMING THE WAY YOUR IDEAS WORK
-                  </h2>
-                  <p className="mono-data text-[0.5rem] font-bold text-neutral-600 tracking-wider mt-1 uppercase">
+                {/* Center Content: Rotating Headline */}
+                <div className="flex flex-col items-center text-center my-auto px-1">
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+                    <span className="uppercase-label text-accent font-black text-[0.52rem] tracking-widest">
+                      BREAKING NEWS
+                    </span>
+                  </div>
+                  <div className="h-16 flex items-center justify-center overflow-hidden">
+                    <h2 
+                      className={`headline-serif text-sm sm:text-base font-black uppercase tracking-tight text-primary leading-tight transition-all duration-300 ease-out ${
+                        headlineAnimState === "in" 
+                          ? "opacity-100 translate-y-0" 
+                          : "opacity-0 -translate-y-2"
+                      }`}
+                    >
+                      {headlines[headlineIndex]}
+                    </h2>
+                  </div>
+                  <p className="mono-data text-[0.48rem] font-bold text-neutral-600 tracking-wider mt-2 uppercase">
                     ABHAY KUMAR DAS // FULL-STACK
                   </p>
-                </div>
-
-                {/* Mobile News Ticker Strip (The 5 News Bulletins) */}
-                <div className="w-full bg-[#111111] text-background py-1 px-2 rounded flex items-center gap-1.5 overflow-hidden border border-neutral-700 shadow-sm mb-2">
-                  <span className="bg-accent text-white px-1 py-0.2 uppercase-label text-[0.45rem] font-black shrink-0">
-                    WIRE
-                  </span>
-                  <div className="overflow-hidden whitespace-nowrap flex-grow">
-                    <div className="flex animate-marquee text-[0.5rem] mono-data font-black uppercase tracking-wider text-neutral-200">
-                      <span className="mx-2">● [01] SCALABLE MERN & CLOUD</span>
-                      <span className="mx-2">● [02] 99.9% UPTIME S.L.A</span>
-                      <span className="mx-2">● [03] DOCKER & KUBERNETES</span>
-                      <span className="mx-2">● [04] 25+ SOLUTIONS DEPLOYED</span>
-                      <span className="mx-2">● [05] COLLABORATION 2026</span>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Bottom Bar */}
@@ -460,7 +433,7 @@ function App() {
               {/* 2. Mobile Portfolio Page INSIDE the Phone Screen (Fades in on scroll) */}
               <div 
                 ref={mobilePageScreenRef}
-                className="absolute inset-0 bg-[#fbf9f5] text-primary flex flex-col justify-between pt-9 pb-3.5 px-3 select-none z-15 will-change-transform opacity-0 overflow-hidden"
+                className="absolute inset-0 bg-[#fbf9f5] text-primary flex flex-col justify-between pt-8 pb-3 px-3 select-none z-15 will-change-transform opacity-0 overflow-hidden"
               >
                 {/* Header */}
                 <div className="flex justify-between items-center border-b border-primary/25 pb-1">
@@ -479,10 +452,10 @@ function App() {
                       Breaking Development
                     </span>
                   </div>
-                  <h3 className="headline-serif text-base font-black uppercase tracking-tight text-primary leading-tight">
+                  <h3 className="headline-serif text-sm font-black uppercase tracking-tight text-primary leading-tight">
                     TRANSFORMING THE WAY YOUR <span className="italic text-accent">IDEAS</span> WORK
                   </h3>
-                  <p className="text-[0.48rem] text-primary/80 leading-snug mt-1 line-clamp-3">
+                  <p className="text-[0.46rem] text-primary/80 leading-snug mt-1 line-clamp-3">
                     Abhay Kumar Das builds scalable web applications & intuitive digital experiences.
                   </p>
                   <div className="flex justify-center gap-1.5 mt-2">
@@ -492,9 +465,9 @@ function App() {
                   </div>
                 </div>
 
-                {/* Bottom Stats & Ticker */}
+                {/* Bottom Stats */}
                 <div className="border-t border-primary/20 pt-1">
-                  <div className="flex justify-around text-center mb-1">
+                  <div className="flex justify-around text-center">
                     <div>
                       <p className="headline-serif text-xs font-black">3+ YRS</p>
                       <p className="uppercase-label text-[0.4rem] text-muted-text">EXP</p>
@@ -506,13 +479,6 @@ function App() {
                     <div>
                       <p className="headline-serif text-xs font-black">25+</p>
                       <p className="uppercase-label text-[0.4rem] text-muted-text">BUILDS</p>
-                    </div>
-                  </div>
-                  <div className="w-full bg-[#111111] text-background py-0.5 px-1.5 rounded overflow-hidden">
-                    <div className="flex animate-marquee text-[0.42rem] mono-data font-black uppercase tracking-wider text-neutral-200">
-                      <span className="mx-2">● GITHUB / @INNOCENT-ALIVE</span>
-                      <span className="mx-2">● LINKEDIN / @ABHAY-KUMAR-DAS</span>
-                      <span className="mx-2">● FULL-STACK PORTFOLIO 2026</span>
                     </div>
                   </div>
                 </div>
@@ -527,24 +493,9 @@ function App() {
             </div>
           </div>
 
-          {/* Smartphone Soft Floor Shadow & Pill anchored below */}
-          <div className="absolute top-[calc(100%+6px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none w-max">
-            <div className="w-44 h-3 bg-black/40 blur-md rounded-full mx-auto" />
-            <div 
-              ref={mobileIndicatorRef}
-              className="pointer-events-auto cursor-pointer mt-2.5 transition-transform hover:scale-[1.03] active:scale-95"
-              onClick={handleRemoteClick}
-            >
-              <div className="bg-[#141414] border border-neutral-700/80 rounded-full py-1.5 px-4 shadow-[0_12px_24px_rgba(0,0,0,0.5)] flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
-                <span className="uppercase-label text-[0.6rem] font-black tracking-wider text-accent leading-none">
-                  SCROLL TO READ FULL ARTICLE
-                </span>
-                <span className="text-white text-xs font-black animate-bounce leading-none">
-                  ↓
-                </span>
-              </div>
-            </div>
+          {/* Smartphone Soft Floor Shadow */}
+          <div className="absolute top-[calc(100%+8px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none w-max">
+            <div className="w-40 h-3 bg-black/40 blur-md rounded-full mx-auto" />
           </div>
         </div>
 
@@ -552,13 +503,13 @@ function App() {
         {/* DESKTOP & TABLET MODERN SMART TV FRAME (>= 768px screens)                 */}
         {/* ========================================================================= */}
         <div className="hidden md:flex flex-col items-center relative">
-          {/* Modern Slim Bezel TV Frame - centered on screen */}
+          {/* Modern Slim Bezel TV Frame - centered on screen with sleek lowered width */}
           <div className="bg-[#0c0c0c] p-2 sm:p-2.5 rounded-2xl border border-neutral-700/80 shadow-[0_30px_70px_-15px_rgba(0,0,0,0.65),0_0_0_1px_rgba(255,255,255,0.08)] flex flex-col items-center relative z-10">
             
-            {/* The Widescreen Display Screen - responsive, matches portfolio page proportions! */}
+            {/* The Widescreen Display Screen - lowered width for sleek, balanced modern look */}
             <div 
               ref={tvScreenRef}
-              className="w-[min(90vw,1000px)] lg:w-[min(86vw,1140px)] xl:w-[min(82vw,1240px)] aspect-[16/10] max-h-[64vh] rounded-xl bg-black relative overflow-hidden shadow-inner flex flex-col border border-neutral-800"
+              className="w-[min(84vw,680px)] lg:w-[min(78vw,780px)] xl:w-[820px] aspect-[16/10] max-h-[54vh] rounded-xl bg-black relative overflow-hidden shadow-inner flex flex-col border border-neutral-800"
             >
               {/* Pure Black OLED Screen Base (revealed when paper leaves TV) */}
               <div className="absolute inset-0 bg-[#060606] flex items-center justify-center pointer-events-none">
@@ -590,34 +541,28 @@ function App() {
                   </div>
                 </div>
 
-                {/* Center Main Breaking News Headline & Story */}
-                <div className="flex flex-col items-center justify-center text-center my-auto px-2">
-                  <span className="uppercase-label text-accent font-black text-[0.65rem] sm:text-xs tracking-[0.25em] mb-1.5 animate-pulse">
-                    BREAKING NEWS
-                  </span>
-                  <h1 className="headline-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight text-primary leading-tight max-w-2xl mx-auto">
-                    TRANSFORMING THE WAY YOUR IDEAS WORK
-                  </h1>
-                  <p className="mono-data text-[0.58rem] sm:text-[0.68rem] font-bold text-neutral-600 tracking-wider mt-2 uppercase">
+                {/* Center Content: Rotating Headline that changes smoothly every second */}
+                <div className="flex flex-col items-center justify-center text-center my-auto px-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                    <span className="uppercase-label text-accent font-black text-[0.65rem] sm:text-xs tracking-[0.25em]">
+                      BREAKING NEWS
+                    </span>
+                  </div>
+                  <div className="h-20 sm:h-24 md:h-26 flex items-center justify-center overflow-hidden">
+                    <h1 
+                      className={`headline-serif text-2xl sm:text-3xl md:text-4xl font-black uppercase tracking-tight text-primary leading-[1.05] max-w-xl mx-auto transition-all duration-300 ease-out ${
+                        headlineAnimState === "in" 
+                          ? "opacity-100 translate-y-0 scale-100" 
+                          : "opacity-0 -translate-y-3 scale-[0.98]"
+                      }`}
+                    >
+                      {headlines[headlineIndex]}
+                    </h1>
+                  </div>
+                  <p className="mono-data text-[0.58rem] sm:text-[0.68rem] font-bold text-neutral-600 tracking-wider mt-2.5 uppercase">
                     ABHAY KUMAR DAS // FULL-STACK ARCHITECT
                   </p>
-                </div>
-
-                {/* The 5 Headline Updates News Wire Strip */}
-                <div className="w-full bg-[#111111] text-background py-1.5 px-3 rounded flex items-center gap-2.5 overflow-hidden border border-neutral-700 shadow-sm mb-1">
-                  <div className="flex items-center gap-1.5 bg-accent text-white px-2 py-0.5 uppercase-label text-[0.52rem] sm:text-[0.6rem] font-black shrink-0 rounded-xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                    BULLETIN
-                  </div>
-                  <div className="overflow-hidden whitespace-nowrap flex-grow">
-                    <div className="flex animate-marquee text-[0.58rem] sm:text-[0.65rem] mono-data font-black uppercase tracking-wider text-neutral-200">
-                      <span className="mx-4">● [01] ARCHITECTING SCALABLE MERN & CLOUD SYSTEMS</span>
-                      <span className="mx-4">● [02] 99.9% UPTIME S.L.A ACROSS ENTERPRISE BUILDS</span>
-                      <span className="mx-4">● [03] MICROSERVICES ARCHITECTURE WITH DOCKER & K8S</span>
-                      <span className="mx-4">● [04] 25+ PRODUCTION DIGITAL SOLUTIONS DEPLOYED</span>
-                      <span className="mx-4">● [05] ACCEPTING SELECT ENGINEERING COLLABORATIONS</span>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Bottom Bar: Edition, Scroll hint, Live status */}
@@ -747,64 +692,14 @@ function App() {
             </div>
           </div>
 
-          {/* Stand, Floor Shadow & Remote anchored below the TV frame */}
+          {/* Stand & Floor Shadow anchored below the TV frame */}
           <div className="absolute top-[calc(100%-2px)] left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none z-0 w-max">
             {/* Minimalist Vertical Neck */}
-            <div className="w-16 h-3.5 bg-gradient-to-b from-neutral-800 to-neutral-950 border-x border-neutral-700 mx-auto" />
+            <div className="w-14 h-3.5 bg-gradient-to-b from-neutral-800 to-neutral-950 border-x border-neutral-700 mx-auto" />
             {/* Minimalist Base Plate */}
-            <div className="w-64 sm:w-72 md:w-88 h-2 bg-gradient-to-b from-neutral-700 via-neutral-800 to-neutral-950 rounded-sm shadow-md border-t border-neutral-600 mx-auto" />
+            <div className="w-56 sm:w-64 md:w-72 h-2 bg-gradient-to-b from-neutral-700 via-neutral-800 to-neutral-950 rounded-sm shadow-md border-t border-neutral-600 mx-auto" />
             {/* Ambient Soft Floor Shadow */}
-            <div className="w-72 sm:w-96 md:w-[600px] h-4 bg-black/35 blur-md rounded-full mx-auto mt-1" />
-
-            {/* Modern Minimalist Remote Control Below TV */}
-            <div 
-              ref={indicatorRef}
-              className="pointer-events-auto cursor-pointer mt-3 transition-transform hover:scale-[1.02]"
-              onClick={handleRemoteClick}
-            >
-              <div className="bg-[#151515] border border-neutral-700/80 rounded-2xl p-2.5 sm:p-3 shadow-[0_15px_30px_rgba(0,0,0,0.4)] flex flex-col items-center gap-2 w-64 sm:w-72">
-                {/* Header */}
-                <div className="flex items-center justify-between w-full px-1">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-2 h-2 rounded-full bg-accent animate-ping" />
-                    <span className="mono-data text-[0.52rem] font-bold text-neutral-400 uppercase tracking-widest">
-                      SMART REMOTE
-                    </span>
-                  </div>
-                  <div className="w-3.5 h-1.5 bg-neutral-600 rounded-full" />
-                </div>
-
-                {/* Display */}
-                <div className="w-full bg-[#0a0a0a] border border-neutral-700 rounded-lg py-1.5 px-2.5 flex items-center justify-center gap-2 shadow-inner">
-                  <span className="uppercase-label text-[0.58rem] sm:text-[0.64rem] font-black tracking-wider text-accent text-center leading-none">
-                    SCROLL TO SEE FULL ARTICLE
-                  </span>
-                  <span className="text-white text-xs font-black animate-bounce leading-none">
-                    ↓
-                  </span>
-                </div>
-
-                {/* Buttons */}
-                <div className="w-full flex items-center justify-between px-2 pt-0.5 border-t border-neutral-800">
-                  <div className="flex items-center gap-1">
-                    <span className="w-5 h-5 rounded bg-neutral-800 border border-neutral-600 flex items-center justify-center text-[0.55rem] text-neutral-300 font-bold shadow-sm">
-                      ▲
-                    </span>
-                    <span className="w-5 h-5 rounded bg-neutral-800 border border-neutral-600 flex items-center justify-center text-[0.55rem] text-neutral-300 font-bold shadow-sm">
-                      ▼
-                    </span>
-                  </div>
-                  <div className="flex gap-1.5 items-center">
-                    <span className="w-2 h-2 rounded-full bg-neutral-600" />
-                    <span className="w-2 h-2 rounded-full bg-neutral-600" />
-                    <span className="w-2 h-2 rounded-full bg-neutral-600" />
-                  </div>
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-accent/90 border border-red-500 shadow-inner flex items-center justify-center">
-                    <span className="text-white text-[0.55rem] font-black">⏻</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div className="w-64 sm:w-80 md:w-[480px] h-3.5 bg-black/35 blur-md rounded-full mx-auto mt-1" />
           </div>
         </div>
       </div>
