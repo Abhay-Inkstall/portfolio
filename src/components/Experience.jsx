@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useState, useLayoutEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -6,8 +6,8 @@ gsap.registerPlugin(ScrollTrigger);
 
 const Experience = () => {
   const containerRef = useRef(null);
-  const leftColRef = useRef(null);
-  const rightColRef = useRef(null);
+  const cardRefs = useRef([]);
+  const [activeIdx, setActiveIdx] = useState(0);
 
   const experiences = [
     {
@@ -56,151 +56,184 @@ const Experience = () => {
 
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
-      // Header Animation
-      gsap.fromTo(
-        ".experience-title",
-        { y: 40, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.9,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 85%",
-            toggleActions: "play none none none",
-            refreshPriority: 8,
-          },
-        }
-      );
+      const cards = cardRefs.current.filter(Boolean);
+      if (!cards.length) return;
 
-      const mm = gsap.matchMedia();
+      // Initial States:
+      // Card 0 is visible; Cards 1 and 2 start hidden below
+      gsap.set(cards[0], {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        pointerEvents: "auto",
+        display: "flex",
+      });
+      cards.slice(1).forEach((card) => {
+        gsap.set(card, {
+          opacity: 0,
+          y: 40,
+          scale: 0.96,
+          pointerEvents: "none",
+          display: "flex",
+        });
+      });
 
-      // DESKTOP (>= 1024px): Pin the Left Column while Right Side Careers scroll one by one!
-      mm.add("(min-width: 1024px)", () => {
-        ScrollTrigger.create({
+      // Master Pinned Timeline:
+      // The section pins at top, stopping the heading, left column, and right column from scrolling away!
+      // On scroll, the careers reveal ONE BY ONE with dynamic morphing.
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          id: "experience-pin",
           trigger: containerRef.current,
-          start: "top 80px", // Locks right below the fixed navbar
-          end: () => {
-            if (!rightColRef.current || !leftColRef.current) return "+=1000";
-            const rightHeight = rightColRef.current.offsetHeight;
-            const leftHeight = leftColRef.current.offsetHeight;
-            return `+=${Math.max(0, rightHeight - leftHeight)}`;
-          },
-          pin: leftColRef.current,
-          pinSpacing: false,
+          start: "top top",
+          end: "+=2200",
+          pin: true,
+          scrub: 0.8,
           anticipatePin: 1,
           refreshPriority: 8,
-          invalidateOnRefresh: true,
-        });
-
-        // Right side career entries reveal one by one on scroll
-        const entries = gsap.utils.toArray(".career-entry");
-        entries.forEach((entry, idx) => {
-          gsap.fromTo(
-            entry,
-            {
-              y: 45,
-              opacity: idx === 0 ? 1 : 0.35,
-            },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: entry,
-                start: "top 80%",
-                toggleActions: "play none none none",
-                refreshPriority: 8,
-              },
+          onUpdate: (self) => {
+            const p = self.progress;
+            if (p < 0.32) {
+              setActiveIdx(0);
+            } else if (p < 0.68) {
+              setActiveIdx(1);
+            } else {
+              setActiveIdx(2);
             }
-          );
-        });
+          },
+        },
       });
 
-      // MOBILE (< 1024px): Standard clean scroll reveal
-      mm.add("(max-width: 1023px)", () => {
-        const entries = gsap.utils.toArray(".career-entry");
-        entries.forEach((entry) => {
-          gsap.fromTo(
-            entry,
-            { y: 35, opacity: 0 },
-            {
-              y: 0,
-              opacity: 1,
-              duration: 0.7,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: entry,
-                start: "top 85%",
-                toggleActions: "play none none none",
-                refreshPriority: 8,
-              },
-            }
-          );
-        });
-      });
+      // Transition 1 -> 2:
+      // Career 1 exits (0.24 - 0.36), Career 2 enters (0.28 - 0.40)
+      tl.to(
+        cards[0],
+        {
+          opacity: 0,
+          y: -35,
+          scale: 0.96,
+          ease: "power2.inOut",
+          duration: 0.12,
+          pointerEvents: "none",
+        },
+        0.24
+      );
+
+      tl.to(
+        cards[1],
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          ease: "power2.inOut",
+          duration: 0.12,
+          pointerEvents: "auto",
+        },
+        0.28
+      );
+
+      // Transition 2 -> 3:
+      // Career 2 exits (0.58 - 0.70), Career 3 enters (0.62 - 0.74)
+      tl.to(
+        cards[1],
+        {
+          opacity: 0,
+          y: -35,
+          scale: 0.96,
+          ease: "power2.inOut",
+          duration: 0.12,
+          pointerEvents: "none",
+        },
+        0.58
+      );
+
+      tl.to(
+        cards[2],
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          ease: "power2.inOut",
+          duration: 0.12,
+          pointerEvents: "auto",
+        },
+        0.62
+      );
+
+      // Extended reading hold for Career 3 from 0.74 to 1.00 before unpinning
+      tl.to({}, { duration: 0.26 }, 0.74);
     }, containerRef);
+
+    ScrollTrigger.sort();
+    ScrollTrigger.refresh();
 
     return () => ctx.revert();
   }, []);
+
+  const handleTabClick = (idx) => {
+    const st = ScrollTrigger.getById("experience-pin");
+    if (st) {
+      const targetProgress = idx === 0 ? 0.05 : idx === 1 ? 0.46 : 0.86;
+      const targetScroll = st.start + (st.end - st.start) * targetProgress;
+      window.scrollTo({
+        top: targetScroll,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <section 
       id="experience" 
       ref={containerRef} 
-      className="py-16 md:py-24 bg-background border-b-4 border-primary bg-news-dots relative"
+      className="min-h-screen pt-20 sm:pt-24 pb-12 sm:pb-16 bg-background border-b-4 border-primary bg-news-dots relative flex flex-col justify-center select-none"
     >
-      <div className="container mx-auto px-4">
-        {/* Section Header - Exact replica of original design */}
-        <div className="flex justify-between items-end border-b-2 border-primary pb-4 mb-12 experience-title">
-          <h2 className="headline-serif text-4xl md:text-6xl font-black uppercase tracking-tighter text-primary">
+      <div className="container mx-auto px-4 max-w-7xl">
+        {/* Pinned Section Header - Stays stationary during scroll */}
+        <div className="flex justify-between items-end border-b-2 border-primary pb-3 mb-6 sm:mb-8 experience-title">
+          <h2 className="headline-serif text-3xl sm:text-5xl md:text-6xl font-black uppercase tracking-tighter text-primary leading-none">
             DISPATCH: CAREER
           </h2>
-          <span className="uppercase-label text-muted-text hidden md:block text-xs md:text-sm font-bold tracking-widest">
+          <span className="uppercase-label text-muted-text text-xs sm:text-sm font-bold tracking-widest hidden sm:block">
             PROFESSIONAL TIMELINE / VOL 26.0
           </span>
         </div>
 
-        {/* 2-Column Split: Left Side Fixed, Right Side Scrolling Careers */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        {/* 2-Column Split Layout: Both Left and Right stay pinned while right-side careers reveal 1-by-1 */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
           
           {/* ========================================================================= */}
-          {/* LEFT COLUMN: Fixed / Pinned on Desktop as user scrolls through careers   */}
+          {/* LEFT COLUMN: Executive Summary & KPIs (Pinned in view)                    */}
           {/* ========================================================================= */}
-          <div 
-            ref={leftColRef}
-            className="lg:col-span-4 lg:border-r-4 lg:border-primary lg:pr-10 lg:sticky lg:top-24 lg:self-start will-change-transform"
-          >
-            <h3 className="uppercase-label text-sm font-black mb-6 text-primary tracking-widest whitespace-nowrap overflow-hidden text-ellipsis">
+          <div className="lg:col-span-4 lg:border-r-4 lg:border-primary lg:pr-8">
+            <h3 className="uppercase-label text-xs sm:text-sm font-black mb-3 text-primary tracking-widest">
               EXECUTIVE SUMMARY
             </h3>
             
-            <p className="text-xl md:text-2xl leading-relaxed text-primary font-bold italic mb-10 border-l-4 border-accent pl-6">
+            <p className="text-base sm:text-xl lg:text-2xl leading-relaxed text-primary font-bold italic mb-6 lg:mb-8 border-l-4 border-accent pl-4 sm:pl-6">
               "A documented history of building scalable solutions and driving technical excellence across diverse organizational structures."
             </p>
 
             {/* Key Performance Indicators Box */}
-            <div className="bg-neutral-100 p-8 border-4 border-primary shadow-[8px_8px_0px_0px_rgba(17,17,17,1)]">
-              <span className="uppercase-label text-xs block mb-6 font-black tracking-tighter border-b border-primary pb-2">
+            <div className="bg-neutral-100 p-5 sm:p-7 border-4 border-primary shadow-[6px_6px_0px_0px_rgba(17,17,17,1)]">
+              <span className="uppercase-label text-[0.65rem] sm:text-xs block mb-4 font-black tracking-tight border-b border-primary/40 pb-1.5">
                 KEY PERFORMANCE INDICATORS
               </span>
-              <ul className="space-y-5 mono-data text-xs font-black text-primary">
-                <li className="flex justify-between border-b border-primary/20 pb-2">
-                  <span>UPTIME S.L.A:</span> 
-                  <span>99.9%</span>
+              <ul className="space-y-3 sm:space-y-4 mono-data text-xs font-black text-primary">
+                <li className="flex justify-between border-b border-primary/20 pb-1.5">
+                  <span className="text-neutral-600">UPTIME S.L.A:</span> 
+                  <span className="text-accent font-black">99.9%</span>
                 </li>
-                <li className="flex justify-between border-b border-primary/20 pb-2">
-                  <span>DEV VELOCITY:</span> 
+                <li className="flex justify-between border-b border-primary/20 pb-1.5">
+                  <span className="text-neutral-600">DEV VELOCITY:</span> 
                   <span>HIGH</span>
                 </li>
-                <li className="flex justify-between border-b border-primary/20 pb-2">
-                  <span>OPTIMIZATION:</span> 
-                  <span>+40%</span>
+                <li className="flex justify-between border-b border-primary/20 pb-1.5">
+                  <span className="text-neutral-600">OPTIMIZATION:</span> 
+                  <span className="text-accent font-black">+40%</span>
                 </li>
-                <li className="flex justify-between border-b border-primary/20 pb-2">
-                  <span>MENTORSHIP:</span> 
+                <li className="flex justify-between">
+                  <span className="text-neutral-600">MENTORSHIP:</span> 
                   <span>ACTIVE</span>
                 </li>
               </ul>
@@ -208,55 +241,82 @@ const Experience = () => {
           </div>
 
           {/* ========================================================================= */}
-          {/* RIGHT COLUMN: 3 Careers Showing One by One on Scroll                      */}
+          {/* RIGHT COLUMN: Pinned Dynamic Stage - Careers Show ONE BY ONE on Scroll    */}
           {/* ========================================================================= */}
-          <div 
-            ref={rightColRef}
-            className="lg:col-span-8 flex flex-col gap-12 lg:gap-16"
-          >
-            {experiences.map((exp, idx) => (
-              <div key={exp.id} className="career-entry group relative">
-                {/* Header: Title and Duration Chip */}
-                <div className="flex flex-col md:flex-row md:items-start justify-between mb-2 gap-4">
-                  <div className="flex-grow">
-                    <h3 className="headline-serif text-3xl md:text-4xl lg:text-5xl font-black text-primary uppercase group-hover:text-accent transition-colors duration-300 leading-none mb-2">
-                      {exp.position}
-                    </h3>
-                    <p className="uppercase-label text-xs md:text-sm font-black text-muted-text flex items-center gap-2">
-                      <span className="text-primary">{exp.company.toUpperCase()}</span>
-                      <span className="w-1.5 h-1.5 bg-primary/20 rounded-full" />
-                      <span>{exp.location.toUpperCase()}</span>
-                    </p>
-                  </div>
-                  <span className="mono-data text-xs font-black border-2 border-primary px-4 py-2 bg-background self-start md:self-auto whitespace-nowrap shadow-[4px_4px_0px_0px_rgba(17,17,17,1)] group-hover:bg-accent group-hover:text-background transition-all duration-300">
-                    {exp.duration}
-                  </span>
-                </div>
-                
-                {/* Description & Impact Deliverables */}
-                <div className="border-l-4 border-primary pl-8 mt-5">
-                  <p className="text-lg md:text-xl text-primary font-bold mb-8 leading-snug text-justify">
-                    {exp.description}
-                  </p>
-                  
-                  <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    {exp.highlights.map((highlight, i) => (
-                      <li key={i} className="flex items-start gap-4">
-                        <span className="w-2.5 h-2.5 bg-accent mt-1 flex-shrink-0" />
-                        <span className="text-primary font-black text-[0.7rem] leading-tight uppercase tracking-tight">
-                          {highlight}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                {/* Dashed Horizontal Divider between entries */}
-                {idx !== experiences.length - 1 && (
-                  <div className="mt-14 md:mt-20 w-full border-t-2 border-primary border-dashed" />
-                )}
+          <div className="lg:col-span-8 flex flex-col">
+            
+            {/* Interactive Timeline Progress Tab Bar */}
+            <div className="flex items-center justify-between gap-2 mb-6 border-b-2 border-primary/30 pb-3">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                {experiences.map((exp, idx) => (
+                  <button
+                    key={exp.id}
+                    onClick={() => handleTabClick(idx)}
+                    className={`group flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xs transition-all duration-300 cursor-pointer ${
+                      activeIdx === idx
+                        ? "bg-primary text-background font-black shadow-[3px_3px_0px_0px_rgba(204,0,0,1)] scale-[1.02]"
+                        : "bg-neutral-100 hover:bg-neutral-200 text-neutral-600 font-bold border border-neutral-300"
+                    }`}
+                  >
+                    <span className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${activeIdx === idx ? "bg-accent animate-pulse" : "bg-neutral-400"}`} />
+                    <span className="mono-data text-[0.62rem] sm:text-xs tracking-wider uppercase">
+                      0{idx + 1}. {exp.duration}
+                    </span>
+                  </button>
+                ))}
               </div>
-            ))}
+              <div className="mono-data text-[0.65rem] sm:text-xs font-black text-accent tracking-widest hidden sm:block">
+                TIMELINE // 0{activeIdx + 1} OF 03
+              </div>
+            </div>
+
+            {/* Dynamic Stage: Fixed Height Container with Staged Absolute Cards */}
+            <div className="relative w-full min-h-[380px] sm:min-h-[360px] lg:min-h-[380px]">
+              {experiences.map((exp, idx) => (
+                <div 
+                  key={exp.id} 
+                  ref={(el) => (cardRefs.current[idx] = el)}
+                  className="absolute inset-0 w-full flex flex-col will-change-transform"
+                >
+                  {/* Role Headline and Dynamic Year Chip */}
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2">
+                    <div className="flex-grow">
+                      <h3 className="headline-serif text-2xl sm:text-4xl lg:text-5xl font-black text-accent uppercase leading-none tracking-tight mb-2">
+                        {exp.position}
+                      </h3>
+                      <p className="uppercase-label text-xs sm:text-sm font-black text-muted-text flex items-center gap-2">
+                        <span className="text-primary font-black">{exp.company.toUpperCase()}</span>
+                        <span className="w-1.5 h-1.5 bg-primary/20 rounded-full" />
+                        <span>{exp.location.toUpperCase()}</span>
+                      </p>
+                    </div>
+                    <span className="mono-data text-xs sm:text-sm font-black border-2 border-primary px-4 py-2 bg-accent text-white self-start sm:self-auto whitespace-nowrap shadow-[4px_4px_0px_0px_rgba(17,17,17,1)]">
+                      {exp.duration}
+                    </span>
+                  </div>
+
+                  {/* Impact Description with Signature Vertical Red/Black Accent Bar */}
+                  <div className="border-l-4 border-primary pl-4 sm:pl-7 mt-4 sm:mt-5">
+                    <p className="text-base sm:text-lg lg:text-xl text-primary font-bold mb-5 sm:mb-6 leading-snug text-justify">
+                      {exp.description}
+                    </p>
+                    
+                    {/* Key Deliverables Bullet Points Grid */}
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3.5 sm:gap-y-4">
+                      {exp.highlights.map((highlight, i) => (
+                        <li key={i} className="flex items-start gap-3">
+                          <span className="w-2.5 h-2.5 bg-accent mt-1 flex-shrink-0 shadow-xs" />
+                          <span className="text-primary font-black text-[0.68rem] sm:text-[0.72rem] leading-tight uppercase tracking-tight">
+                            {highlight}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+
           </div>
 
         </div>
