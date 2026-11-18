@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import Loader from "./components/Loader";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
@@ -44,6 +44,8 @@ function App() {
   const [headlineAnimState, setHeadlineAnimState] = useState("in");
 
   useEffect(() => {
+    if (loading) return;
+
     const interval = setInterval(() => {
       setHeadlineAnimState("out");
       setTimeout(() => {
@@ -53,7 +55,7 @@ function App() {
     }, 1300);
 
     return () => clearInterval(interval);
-  }, [headlines.length]);
+  }, [loading, headlines.length]);
 
   useEffect(() => {
     if (isSepia) {
@@ -72,9 +74,9 @@ function App() {
     localStorage.setItem("sepiaMode", isSepia);
   }, [isSepia]);
 
-  const handleLoaderComplete = () => {
+  const handleLoaderComplete = useCallback(() => {
     setLoading(false);
-  };
+  }, []);
 
   const getInitialScale = () => {
     if (typeof window === "undefined") return 0.46;
