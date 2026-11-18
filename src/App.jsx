@@ -274,7 +274,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background font-body transition-colors duration-700 overflow-x-hidden">
+    <div className="min-h-screen bg-background font-body transition-colors duration-700 overflow-x-clip">
       {loading && <Loader onComplete={handleLoaderComplete} />}
 
       {/* Fixed Sticky Navbar for the entire portfolio */}
